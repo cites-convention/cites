@@ -1,0 +1,76 @@
+<?php
+
+function cites_schema_changes_schema_alter(&$schema) {
+  if (isset($schema['node'])) {
+    $schema['node']['fields']['title'] = array(
+      'type' => 'varchar',
+      'length' => 768,
+      'not null' => TRUE,
+      'default' => '',
+    );
+  }
+
+  if (isset($schema['node_revision'])) {
+    $schema['node_revision']['fields']['title'] = array(
+      'type' => 'varchar',
+      'length' => 768,
+      'not null' => TRUE,
+      'default' => '',
+    );
+  }
+
+  if (isset($schema['comment'])) {
+    $schema['comment']['fields']['subject'] = array(
+      'type' => 'varchar',
+      'length' => 768,
+      'not null' => TRUE,
+      'default' => '',
+    );
+  }
+
+  if (isset($schema['forum_index'])) {
+    $schema['forum_index']['fields']['title'] = array(
+      'type' => 'varchar',
+      'length' => 768,
+      'not null' => TRUE,
+      'default' => '',
+    );
+  }
+
+  if (isset($schema['field_data_title_field'])) {
+    $schema['field_data_title_field']['fields']['title_field_value'] = array(
+      'type' => 'varchar',
+      'length' => 768,
+      'not null' => TRUE,
+      'default' => '',
+    );
+  }
+  
+  if (isset($schema['field_revision_title_field'])) {
+    $schema['field_revision_title_field']['fields']['title_field_value'] = array(
+      'type' => 'varchar',
+      'length' => 768,
+      'not null' => TRUE,
+      'default' => '',
+    );
+  }
+
+}
+
+/**
+ * 
+ * @param $form - the form
+ * @param $form_state - state of the form
+ * @param $form_id - id of the form
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
+function cites_schema_changes_form_alter(&$form, &$form_state, $form_id) {
+  if ($form['#id'] == 'norma-node-form') {
+    $form['title']['#type'] = 'textarea';
+    $form['title']['#maxlength'] = 768;
+  }
+  if ($form['#id'] == 'parties-notification-node-form') {
+    $form['title']['#type'] = 'textarea';
+    $form['title']['#maxlength'] = 768;
+  }
+}

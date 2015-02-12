@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * changes node.title,node_revision.title,comment.subject columns to varchar(768).
+ */
+function cites_schema_changes_install() {
+  /*db_change_field('node', 'title', 'title', array(
+    'type' => 'varchar',
+    'length' => 768), array()
+  );*/
+
+  db_change_field('node_revision', 'title', 'title', array(
+    'type' => 'varchar',
+    'length' => 768), array()
+  );
+
+  db_change_field('comment', 'subject', 'subject', array(
+    'type' => 'varchar',
+    'length' => 768), array()
+  );
+
+  db_change_field('forum_index', 'title', 'title', array(
+    'type' => 'varchar',
+    'length' => 768), array()
+  );
+
+  db_change_field('role', 'name', 'name', array(
+    'type' => 'varchar',
+    'length' => 255), array()
+  );
+
+  /*db_change_field('field_data_title_field', 'title_field_value', 'title_field_value', array(
+    'type' => 'varchar',
+    'length' => 768, array()
+  ));
+
+  db_change_field('field_revision_title_field', 'title_field_value', 'title_field_value', array(
+    'type' => 'varchar',
+    'length' => 768, array()
+  ));*/
+}
+
+/**
+ * changes node.title,node_revision.title to varchar(255) - default
+ * changes comment.subject to varchar(64)
+ */
+function cites_schema_changes_uninstall() {
+
+}
+

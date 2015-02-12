@@ -1,0 +1,126 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Contextual menus module.
+ */
+
+/**
+ * Implements of hook_install().
+ */
+function contextual_menu_install() {
+  $vocabulary = (object) array(
+    'description'  => t('Use contextual menus to trigger reactions associated with active menu contexts.'),
+    'help'         => t('Select a list of contextual menus to display with your content.'),
+    'machine_name' => 'contextual_menu',
+    'name'         => t('Contextual menus')
+  );
+
+  taxonomy_vocabulary_save($vocabulary);
+
+  variable_set('contextual_menu_vid', $vocabulary->vid);
+
+  $field = array(
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'field_name'  => 'contextual_menu',
+    'settings'    => array(
+      'allowed_values' => array(
+        array(
+          'parent'     => 0,
+          'vocabulary' => $vocabulary->machine_name
+        )
+      )
+    ),
+    'type' => 'taxonomy_term_reference'
+  );
+
+  field_create_field($field);
+
+  $types = node_type_get_types();
+
+  foreach (array_keys($types) as $type) {
+    $instance = array(
+      'bundle'      => $type,
+      'description' => $vocabulary->help,
+      'display'     => array(
+        'default' => array(
+          'type'   => 'hidden',
+          'weight' => 0
+        )
+      ),
+      'entity_type' => 'node',
+      'field_name'  => 'contextual_menu',
+      'label'       => t('Contextual menus'),
+      'widget'      => array(
+        'type'   => 'options_buttons',
+        'weight' => 0
+      )
+    );
+
+    field_create_instance($instance);
+  }
+}
+
+
+/**
+ * Implements of hook_uninstall().
+ */
+function contextual_menu_uninstall() {
+  drupal_uninstall_schema('contextual_menu');
+
+  $vid = variable_get('contextual_menu_vid');
+
+  if (!is_null($vid))
+    taxonomy_vocabulary_delete($vid);
+
+  variable_del('contextual_menu_vid');
+
+  db_delete('context')
+    ->condition('tag', t('Contextual menus'))
+    ->execute();
+
+  context_invalidate_cache();
+
+  field_delete_field('contextual_menu');
+}
+
+
+/**
+ * Implements of hook_schema().
+ */
+function contextual_menu_schema() {
+  $schema['contextual_menu'] = array(
+    'description' => 'Storage for user-defined contextual menus.',
+    'fields'      => array(
+      'menu_name' => array(
+        'default'     => '',
+        'description' => 'Primary Key: Unique key for contextual menu.',
+        'length'      => 32,
+        'not null'    => TRUE,
+        'type'        => 'varchar'
+      ),
+      'enabled' => array(
+        'default'     => 0,
+        'description' => 'Contextual menu enabled state.',
+        'not null'    => TRUE,
+        'size'        => 'tiny',
+        'type'        => 'int'
+      ),
+      'label' => array(
+        'description' => 'Contextual menu label.',
+        'length'      => 255,
+        'type'        => 'varchar'
+      ),
+      'tid' => array(
+        'default'     => 0,
+        'description' => 'Taxonomy term ID.',
+        'not null'    => TRUE,
+        'type'        => 'int',
+        'unsigned'    => TRUE
+      )
+    ),
+    'primary key' => array('menu_name')
+  );
+
+  return $schema;
+}

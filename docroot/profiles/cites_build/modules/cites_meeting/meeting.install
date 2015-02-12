@@ -1,0 +1,62 @@
+<?php
+/**
+ * Implements hook_install()
+ */
+function meeting_install() {
+
+  CitesBase::vocabulary_create('Meeting Type', VOC_MEETING_TYPE);
+
+  menu_rebuild();
+
+  //add permissions for administrator
+  $permissions = array(
+    'create meeting content'     => TRUE,
+    'edit own meeting content'   => TRUE,
+    'edit any meeting content'   => TRUE,
+    'delete own meeting content' => TRUE,
+    'delete any meeting content' => TRUE
+  );
+
+  CitesBase::set_vocabulary_permissions($permissions, VOC_MEETING_TYPE, 'meeting', 'administrator');
+
+  CitesBase::role_add_permissions('administrator', $permissions);
+
+  if (module_exists('entity_translation')) {
+    variable_set('language_content_type_meeting', ENTITY_TRANSLATION_ENABLED);
+    variable_set('entity_translation_hide_translation_links_meeting', 1);
+
+    $et_settings_node = variable_get('entity_translation_settings_node__meeting');
+
+    $et_settings_node['default_language']       = ENTITY_TRANSLATION_LANGUAGE_DEFAULT;
+    $et_settings_node['hide_language_selector'] = FALSE;
+
+    variable_set('entity_translation_settings_node__meeting', $et_settings_node);
+  }
+
+  if (module_exists('date')) {
+    db_insert('date_format_type')
+      ->fields(array(
+        'locked' => 0,
+        'title'  => t('Month and year'),
+        'type'   => 'month_year'
+      ))
+      ->execute();
+
+    db_insert('date_formats')
+      ->fields(array(
+        'format' => 'F Y',
+        'locked' => 0,
+        'type'   => 'custom'
+      ))
+      ->execute();
+
+    variable_set('date_format_month_year', 'F Y');
+  }
+}
+
+/**
+ * Implements hook_uninstall()
+ */
+function meeting_uninstall(){
+  CitesBase::vocabulary_delete(VOC_MEETING_TYPE);
+}

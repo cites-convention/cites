@@ -1,0 +1,420 @@
+<?php
+/**
+ * Define taxonomy for meeting type
+ */
+define('VOC_MEETING_TYPE', 'meeting_type');
+
+/**
+ * Implements hook_node_info().
+ *
+ * We use hook_node_info() to define our node content type.
+ */
+function meeting_node_info() {
+  return array(
+    'meeting' => array(
+      'name' => t('Meeting'),
+      'base' => 'meeting',
+      'description' => t('Meeting Content Type.'),
+      'title_label' => t('Title'),
+      'locked' => TRUE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_node_type_insert().
+ */
+function meeting_node_type_insert($content_type) {
+  if ($content_type->type == 'meeting') {
+    // Add the body field
+    node_add_body_field($content_type,t('Description'));
+
+    // Create all the fields we are adding to our content type.
+    foreach (_meeting_installed_fields() as $field) {
+      field_create_field($field);
+    }
+
+    // Create all the instances for our fields.
+    foreach (_meeting_installed_instances() as $instance) {
+      $instance['entity_type'] = 'node';
+      $instance['bundle'] = 'meeting';
+      field_create_instance($instance);
+    }
+  }
+}
+
+/**
+ * Implement hook_form().
+ */
+function meeting_form($node, $form_state) {
+  return node_content_form($node, $form_state);
+}
+
+/**
+ * Define the fields for our content type.
+ */
+function _meeting_installed_fields() {
+  $fields = array();
+
+  $fields['field_meeting_type'] = array(
+    'cardinality' => 1,
+    'field_name'  => 'field_meeting_type',
+    'settings'    => array(
+      'allowed_values' => array(
+        0 => array(
+          'parent'     => 0,
+          'vocabulary' => 'meeting_type',
+        )
+      )
+    ),
+    'translatable' => 1,
+    'type'         => 'taxonomy_term_reference'
+  );
+
+  $fields['field_meeting_date'] = array(
+    'cardinality' => 1,
+    'field_name'  => 'field_meeting_date',
+    'settings'    => array(
+      'cache_count'   => 4,
+      'cache_enabled' => 0,
+      'granularity'   => array(
+        'day'    => 'day',
+        'hour'   => 0,
+        'minute' => 0,
+        'month'  => 'month',
+        'second' => 0,
+        'year'   => 'year'
+      ),
+      'timezone_db' => '',
+      'todate'      => 'optional',
+      'tz_handling' => 'none'
+    ),
+    'translatable' => 1,
+    'type'         => 'datetime'
+  );
+
+  $fields['field_meeting_document'] = array(
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'field_name'  => 'field_meeting_document',
+    'settings'    => array(
+      'handler'          => 'base',
+      'handler_settings' => array(
+        'behaviors' => array(
+          'views-select-list' => array(
+            'status' => 0
+          )
+        ),
+        'sort' => array(
+          'direction' => 'ASC',
+          'property'  => 'title',
+          'type'      => 'property'
+        ),
+        'target_bundles' => array(
+          'document' => 'document'
+        )
+      ),
+      'target_type' => 'node'
+    ),
+    'translatable' => 1,
+    'type'         => 'entityreference'
+  );
+
+  $fields['field_meeting_location'] = array(
+    'cardinality' => 1,
+    'field_name'  => 'field_meeting_location',
+    'settings'    => array(
+      'max_length' => 255
+    ),
+    'translatable' => 1,
+    'type'         => 'text'
+  );
+
+  $fields['field_meeting_city'] = array(
+    'cardinality' => 1,
+    'field_name'  => 'field_meeting_city',
+    'settings'    => array(
+      'max_length' => 255
+    ),
+    'translatable' => 1,
+    'type'         => 'text'
+  );
+
+  $fields['field_meeting_country'] = array(
+    'cardinality' => 1,
+    'field_name'  => 'field_meeting_country',
+    'settings'    => array(
+      'handler'          => 'base',
+      'handler_settings' => array(
+        'behaviors' => array(
+          'views-select-list' => array(
+            'status' => 0,
+          )
+        ),
+        'sort' => array(
+          'direction' => 'ASC',
+          'property'  => 'title',
+          'type'      => 'property'
+        ),
+        'target_bundles' => array(
+          'country' => 'country'
+        )
+      ),
+      'target_type' => 'node'
+    ),
+    'translatable' => 1,
+    'type'         => 'entityreference'
+  );
+
+  $fields['field_meeting_latitude'] = array(
+    'cardinality' => 1,
+    'field_name'  => 'field_meeting_latitude',
+    'settings'    => array(
+      'decimal_separator' => '.',
+      'precision'         => 10,
+      'scale'             => 8
+    ),
+    'translatable' => 1,
+    'type'        => 'number_decimal'
+  );
+
+  $fields['field_meeting_longitude'] = array(
+    'cardinality' => 1,
+    'field_name'  => 'field_meeting_longitude',
+    'settings'    => array(
+      'decimal_separator' => '.',
+      'precision'         => 10,
+      'scale'             => 8
+    ),
+    'translatable' => 1,
+    'type'         => 'number_decimal'
+  );
+
+  return $fields;
+}
+
+/**
+ * Define the field instances for our content type.
+ */
+function _meeting_installed_instances() {
+  $instances = array();
+
+  /*if (module_exists('entity_translation')) {
+    $instances['node-meeting-title_field'] = array(
+      'bundle'        => 'meeting',
+      'default_value' => NULL,
+      'deleted'       => 0,
+      'description'   => '',
+      'display'       => array(
+        'default' => array(
+          'label'    => 'above',
+          'settings' => array(),
+          'type'     => 'hidden',
+          'weight'   => 0
+        ),
+        'teaser' => array(
+          'label'    => 'above',
+          'settings' => array(),
+          'type'     => 'hidden',
+          'weight'   => 0
+        )
+      ),
+      'entity_type' => 'node',
+      'field_name'  => 'title_field',
+      'label'       => 'Title',
+      'required'    => TRUE,
+      'settings'    => array(
+        'entity_translation_sync' => FALSE,
+        'hide_label'              => array(
+          'entity' => FALSE,
+          'page'   => FALSE
+        ),
+        'text_processing'    => 0,
+        'user_register_form' => FALSE
+      ),
+      'widget' => array(
+        'module'   => 'text',
+        'settings' => array(
+          'size' => 60
+        ),
+        'type'   => 'text_textfield',
+        'weight' => -5
+      )
+    );
+  }*/
+
+  $instances['field_meeting_type'] = array(
+    'field_name' => 'field_meeting_type',
+    'label'      => t('Type'),
+    'widget'     => array(
+      'type' => 'options_select'
+    )
+  );
+
+  $instances['field_meeting_date'] = array(
+    'field_name' => 'field_meeting_date',
+    'label'      => t('Date'),
+    'widget'     => array(
+      'active'   => 1,
+      'module'   => 'date',
+      'settings' => array(
+        'increment'           => 15,
+        'input_format'        => 'custom',
+        'input_format_custom' => 'j F Y',
+        'label_position'      => 'above',
+        'text_parts'          => array(),
+        'year_range'          => '1973:+3',
+      ),
+      'type' => 'date_popup'
+    )
+  );
+
+  $instances['field_meeting_document'] = array(
+    'field_name' => 'field_meeting_document',
+    'label'      => t('Documents'),
+    'settings'   => array(
+      'user_register_form' => FALSE
+    ),
+    'widget' => array(
+      'active'   => 1,
+      'module'   => 'options',
+      'settings' => array(),
+      'type' => 'options_select'
+    )
+  );
+
+  $instances['field_meeting_location'] = array(
+    'field_name' => 'field_meeting_location',
+    'label'      => t('Location'),
+    'widget'     => array(
+      'active'   => 1,
+      'module'   => 'text',
+      'settings' => array(
+        'size' => 255
+      ),
+      'type' => 'text_textfield'
+    )
+  );
+
+  $instances['field_meeting_city'] = array(
+    'field_name' => 'field_meeting_city',
+    'label'      => t('City'),
+    'widget'     => array(
+      'active'   => 1,
+      'module'   => 'text',
+      'settings' => array(
+        'size' => 255
+      ),
+      'type' => 'text_textfield'
+    )
+  );
+
+  $instances['field_meeting_country'] = array(
+    'field_name' => 'field_meeting_country',
+    'label'      => t('Country'),
+    'settings'   => array(
+      'user_register_form' => FALSE
+    ),
+    'widget' => array(
+      'active'   => 1,
+      'module'   => 'options',
+      'settings' => array(),
+      'type'     => 'options_select'
+    )
+  );
+
+  $instances['field_meeting_latitude'] = array(
+    'field_name' => 'field_meeting_latitude',
+    'label'      => t('Latitude'),
+    'widget'     => array(
+      'active'   => 0,
+      'module'   => 'number',
+      'settings' => array(),
+      'type'     => 'number'
+    )
+  );
+
+  $instances['field_meeting_longitude'] = array(
+    'field_name' => 'field_meeting_longitude',
+    'label'      => t('Longitude'),
+    'widget'     => array(
+      'active'   => 0,
+      'module'   => 'number',
+      'settings' => array(),
+      'type'     => 'number'
+    )
+  );
+
+  return $instances;
+}
+
+class Meeting extends CitesBase {
+
+  public static $bundle = 'meeting';
+
+  /**
+     * Create a new Document node instance.
+     *
+     * @param bool $save If TRUE, object is saved into database
+     * @return stdClass The node object initialized
+     */
+    static function node_create($title, $save = TRUE) {
+        return self::drupal_node_create($title, 'meeting', $save);
+    }
+}
+
+
+/**
+ * Implements hook_views_api().
+ */
+function meeting_views_api() {
+  return array('api' => 3);
+}
+
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function meeting_field_formatter_info() {
+  return array(
+    'file_icon' => array(
+      'field types' => array('file'),
+      'label'       => t('Icon link to file')
+    )
+  );
+}
+
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function meeting_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+
+  switch ($display['type']) {
+    case 'file_icon':
+      foreach ($items as $delta => $item) {
+        $file = (object) $item;
+        $url  = file_create_url($file->uri);
+        $icon_directory = variable_get('file_icon_directory', drupal_get_path('module', 'file') . '/icons');
+        $icon = theme('file_icon', array('file' => $file, 'icon_directory' => $icon_directory));
+        $options['attributes']['type'] = $file->filemime . '; length=' . $file->filesize;
+        $options['html'] = TRUE;
+        $link_icon = '<span class="file">' . l($icon, $url, $options) . '</span>';
+        $element[$delta] = array('#markup' => $link_icon);
+      }
+
+      break;
+  }
+
+  return $element;
+}
+
+
+/**
+ * Implements hook_preprocess_views_view_table().
+ */
+function meeting_preprocess_views_view_table(&$vars) {
+  if ($vars['view']->name == 'resolutions') {
+    $vars['header'] = array();
+  }
+}

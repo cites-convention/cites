@@ -1,0 +1,13 @@
+name           = CITES Views
+description    = Defines custom views required for the CITES site.
+core           = 7.x
+package        = CITES
+dependencies[] = views
+version        = 7.x-1.0
+
+; Information added by fserver
+core = "7.x"
+datestamp = "1400595690"
+project = "cites"
+project status url = "http://fserver.eaudeweb.ro/fserver"
+version = "7.x-1.6"

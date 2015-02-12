@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Simpletest case for cites module.
+ *
+ * Verify cites module functionality.
+ */
+
+/**
+ * Functionality tests for cites module.
+ */
+/* abstract */ class CitesBaseTestCase extends DrupalWebTestCase {
+	protected static $bundle;
+
+    public function getInfo() {
+        return array(
+            'name' => 'Cites main module',
+            'description' => 'Verify cites module functionality.',
+            'group' => 'CITES',
+        );
+    }
+}

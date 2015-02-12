@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the CITES contacts module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function cites_contact_install() {
+  if (module_exists('entity_translation')) {
+    variable_set('language_content_type_contact', ENTITY_TRANSLATION_ENABLED);
+    variable_set('entity_translation_hide_translation_links_contact', 1);
+
+    $et_settings_node = variable_get('entity_translation_settings_node__contact');
+
+    $et_settings_node['default_language']       = ENTITY_TRANSLATION_LANGUAGE_DEFAULT;
+    $et_settings_node['hide_language_selector'] = FALSE;
+
+    variable_set('entity_translation_settings_node__contact', $et_settings_node);
+  }
+}

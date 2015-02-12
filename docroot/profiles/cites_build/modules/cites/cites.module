@@ -1,0 +1,301 @@
+<?php
+/**
+ * This is the base class that contains code common to all modules.
+ * This class contains various utility functions that can be reused in
+ * other parts of the project.
+ *
+ * Cannot be inherited by other modules to prevent dependency issues
+ */
+class CitesBase {
+	/**
+     * Create a new Drupal node node instance
+     *
+     * @param string $title Node title
+     * @param string $type Node type (Content type)
+     * @param bool $save Save (TRUE) the node before return
+     * @return stdClass The node object initialized
+     */
+    static function drupal_node_create($title, $type, $save = TRUE, $uuid = NULL) {
+        // global $user;
+        $author = user_uid_optional_load(1);
+        $node = new stdClass();
+        $node->type = $type;
+        node_object_prepare($node);
+        $node->title = $title;
+        $node->language = self::get_default_language();
+        $node->status = 1;
+        //return logged user id or anonimus if usser not logged in
+        $node->uid = $author->uid; //$user->uid;
+        $node->changed = $_SERVER['REQUEST_TIME'];
+        $node->created = $_SERVER['REQUEST_TIME'];
+        $node->promote = 0;
+        $node->sticky = 0;
+        $node->comment = 1;
+        $node = node_submit($node);
+        $node->uuid = $uuid;
+        if($save) {
+            node_save($node);
+        }
+        return $node;
+    }
+
+	/**
+     * Assign permissions to a role
+     * @param string $role_name
+     * @param array $permissions
+     * @return boolean
+     */
+	static function role_add_permissions($role_name, $permissions) {
+        $role = user_role_load_by_name($role_name);
+        if(!empty($role)) {
+            user_role_change_permissions($role->rid, $permissions);
+            return TRUE;
+        } else {
+            self::println('WARNING - Role %s does not exists. [CitesBase::role_add_permissions()]', $role_name);
+            return FALSE;
+        }
+    }
+
+    /**
+     *
+     * Get the default language
+     * @param $node
+     */
+ 	public static function get_default_language($node = NULL) {
+        if (($node !== NULL) && (is_object($node))) {
+            if (property_exists($node, 'language')) {
+                return $node->language;
+            }else {
+                return language_default('language');
+            }
+        } else {
+        	return language_default('language');
+        }
+    }
+
+	/**
+     * Echo a formatted string with newline
+     * @param string format See sprintf() for a description of format
+     * @param mixed args Variable arguments
+     */
+    static function println($message) {
+        $params = array($message) + func_get_args();
+        call_user_func_array('printf', $params);
+        echo "\n";
+    }
+
+	/**
+     * Set a simple value to a Drupal node, with multilanguage
+     *
+     * $node->$field[$langcode][0][$property] = $v;
+     *
+     * @param object $node Drupal node
+     * @param string $field_name Nodes' field name
+     * @param mixed $data Associative array holding the data. Must contain key $field_name
+     * @param string $property Property to set to the nodes' value. Default 'value'
+     */
+    static function set_field_single_value(&$node, $field_name, $data, $property = 'value') {
+        if(!empty($node) && !empty($data[$field_name])) {
+            $value = $data[$field_name];
+            $langcode = self::get_default_language($node);
+            $node->{$field_name} = array($langcode => array(0 => array($property => $value)));
+        }
+    }
+
+	/**
+     * Get Drupal node's 'value' field
+     * @param stdClass|object $node Drupal node
+     * @param array $field_name Drupal field name
+     * @param array $out Associative array where this value is also set
+     *
+     * @return string Returns Actual value or NULL
+     */
+    static function get_field_single_value($node, $field_name, &$out = NULL) {
+        $result = NULL;
+        $langcode = self::get_default_language($node);
+        if(!empty($node->{$field_name}[$langcode][0]['value'])) {
+            $result = $node->{$field_name}[$langcode][0]['value'];
+        }
+        if($out !== NULL) {
+            $out[$field_name] = $result;
+        }
+        return $result;
+    }
+
+
+    /**
+     * Set a value of link_field to a Drupal node, with multilanguage
+     *
+     * $node->$field[$langcode][0]['url'] = $data[$field_name]['url'];
+     *
+     * @param object $node Drupal node
+     * @param string $field_name Nodes' field name
+     * @param mixed $data Associative array holding the data. Must contain key $field_name
+     */
+    static function set_link_field_single_value(&$node, $field_name, $data) {
+    	if(!empty($node) && !empty($data[$field_name])) {
+            $link_attr = $data[$field_name];
+            $langcode = self::get_default_language($node);
+            $node->{$field_name} = array($langcode => array(0 => array('url' => $link_attr['url'])));
+        }
+    }
+
+    /**
+     * Get Drupal node's 'title' value of a link field
+     * @param stdClass|object $node Drupal node
+     * @param array $field_name Drupal field name
+     *
+     * @return string Returns Actual value or NULL
+     */
+    static function get_link_field_title_single_value($node, $field_name){
+    	$result = NULL;
+        $langcode = self::get_default_language($node);
+        if(!empty($node->{$field_name}[$langcode][0]['title'])) {
+            $result = $node->{$field_name}[$langcode][0]['title'];
+        }
+        return $result;
+    }
+
+    /**
+     * Get Drupal node's 'url' value of a link field
+     * @param stdClass|object $node Drupal node
+     * @param array $field_name Drupal field name
+     *
+     * @return string Returns Actual value or NULL
+     */
+	static function get_link_field_url_single_value($node, $field_name){
+    	$result = NULL;
+        $langcode = self::get_default_language($node);
+        if(!empty($node->{$field_name}[$langcode][0]['url'])) {
+            $result = $node->{$field_name}[$langcode][0]['url'];
+        }
+        return $result;
+    }
+
+	/**
+     * Create new root vocabulary (no parent)
+     * @param string $name
+     * @param string $machine_name
+     * @return integer Same as taxonomy_vocabulary_save, or 0 if already exists
+     */
+    static function vocabulary_create($name, $machine_name) {
+        $existing = taxonomy_vocabulary_machine_name_load($machine_name);
+        if($existing === FALSE) {
+            $voc = new stdClass();
+            $voc->name = $name;
+            $voc->machine_name = $machine_name;
+            $voc->hierarchy = 0;
+            return taxonomy_vocabulary_save($voc);
+        } else {
+			return 0;
+		}
+    }
+
+    /**
+     *
+     * Delete vocabulary
+     * @param string $name
+     * @return TRUE if the taxonomy was deleted or else FALSE
+     */
+	static function vocabulary_delete($name) {
+        $vocabulary = taxonomy_vocabulary_machine_name_load($name);
+        if(!empty($vocabulary)) {
+            taxonomy_vocabulary_delete($vocabulary->vid);
+            return TRUE;
+        } else {
+			return FALSE;
+		}
+    }
+
+	/**
+     * @param string $term_name Term name
+     * @param string $vocabulary_name Name of the vocabulary to add the term if doesn't exist
+     * @param boolean $create Create the term if it doesn't exist
+     * @param string $description Term description
+     * @param array $parent Term parents tids
+     * @return stdClass|FALSE The actual term object or FALSE if invalid term name or term doesn't exist
+     */
+    public static function vocabulary_get_or_create_term($term_name, $vocabulary_name, $create = TRUE, $description = '', $parent = array()) {
+        $term_name = trim($term_name);
+        if(empty($term_name)) {
+            return FALSE;
+        }
+        $ret = taxonomy_get_term_by_name($term_name, $vocabulary_name);
+        if(empty($ret)) {
+            $ret = NULL;
+            if($create) {
+                // Create the term into vocabulary
+                $vocabulary = taxonomy_vocabulary_machine_name_load($vocabulary_name);
+                if(!empty($vocabulary)) {
+                    $term = array('vid' => $vocabulary->vid, 'name' => $term_name, 'description' => $description);
+                    if (!empty($parent)) {
+                        $term['parent'] = $parent;
+                    }
+                    $term = (object)$term;
+                    if (taxonomy_term_save($term)) {
+                        $ret = $term;
+                    }
+                } else {
+					self::println('WARNING - Cannot find term %s inside vocabulary %s. [CitesBase::vocabulary_get_or_create_term()]', $term_name, $vocabulary_name);
+                }
+            }
+        } else {
+            $ret = current($ret);
+        }
+        return $ret;
+    }
+
+    /**
+     * Assign permissions to a role for a given taxonomy
+     * @param array $permissions
+     * @param string $vocabulary_name - machine name
+     * @param string $content_type
+     * @param string $role
+     * @return array
+     */
+	static function set_vocabulary_permissions(&$permissions, $vocabulary_name, $content_type, $role) {
+        $vocabulary = taxonomy_vocabulary_machine_name_load($vocabulary_name);
+        if(!empty($vocabulary)) {
+            $permissions += array(
+                "add terms in {$vocabulary->vid}" => TRUE,
+                "edit terms in {$vocabulary->vid}" => TRUE,
+                "delete terms in {$vocabulary->vid}" => TRUE
+            );
+        } else {
+            self::println('WARNING : Cannot find vocabulary %s. Cannot assign vocabulary permission to role %s. - [CitesBase::set_vocabulary_permissions()]', $vocabulary_name, $role);
+        }
+
+        return $permissions;
+    }
+
+    /**
+     * Read JSON file and make it an object
+     * @param string $file_path Path to a valid JSON file
+     * @param bool $assoc When TRUE, returned objects will be converted into associative arrays.
+     * @return object Object (array, stdClass etc.) resembling JSON structure
+     */
+    public static function read_json($file_path, $assoc = false) {
+        $ret = NULL;
+        if($file_path == null) {
+            throw new Exception("read_json(): NULL file passed. Aborting.");
+        }
+        if(!is_file($file_path)) {
+            throw new Exception(sprintf("read_json(): File %s does not exists", $file_path));
+            return $ret;
+        }
+        if(!is_readable($file_path)) {
+            throw new Exception(sprintf("read_json(): File %s is not readable", $file_path));
+            return $ret;
+        }
+        $content = file_get_contents($file_path);
+        if($content !== FALSE) {
+            $ret = json_decode($content, $assoc);
+            if($ret === NULL) {
+                throw new Exception(sprintf("read_json(): Unable to decode JSON data from %s", $file_path));
+            }
+        } else {
+            throw new Exception(sprintf("read_json(): Generic error reading %s", $file_path));
+        }
+        return $ret;
+    }
+}

@@ -1,0 +1,33 @@
+name = CITES Notifications to the parties
+description = Notification to the parties content type
+package = CITES
+
+dependencies[] = ctools
+dependencies[] = features
+dependencies[] = file
+dependencies[] = i18n_field
+dependencies[] = institution
+dependencies[] = list
+dependencies[] = options
+dependencies[] = text
+dependencies[] = views
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:2
+features[field_base][] = field_notification_annexes
+features[field_base][] = field_notification_attachment
+features[field_base][] = field_notification_number
+features[field_base][] = field_notification_status
+features[field_instance][] = node-parties_notification-field_notification_annexes
+features[field_instance][] = node-parties_notification-field_notification_attachment
+features[field_instance][] = node-parties_notification-field_notification_number
+features[field_instance][] = node-parties_notification-field_notification_status
+features[field_instance][] = node-parties_notification-title_field
+features[node][] = parties_notification
+features[views_view][] = parties_notification
+
+; Information added by fserver
+core = "7.x"
+datestamp = "1378124229"
+project = "cites_parties_notification"
+project status url = "http://fserver.eaudeweb.ro/fserver"
+version = "7.x-1.1"

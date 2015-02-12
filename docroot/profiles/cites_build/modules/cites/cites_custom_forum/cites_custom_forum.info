@@ -1,0 +1,35 @@
+name = CITES Forum
+description = Customizations added to the Drupal forum module for the CITES project 
+core = 7.x
+package = CITES
+php = 5.2.4
+version = 7.x-1.17
+project = cites_custom_forum
+
+dependencies[] = acl
+dependencies[] = advanced_forum
+dependencies[] = author_pane
+dependencies[] = content_access
+dependencies[] = entity_token
+dependencies[] = file
+dependencies[] = forum
+dependencies[] = forum_access
+dependencies[] = node_notify
+dependencies[] = profile2
+dependencies[] = statistics
+dependencies[] = subscriptions
+dependencies[] = subscriptions_ui
+dependencies[] = subscriptions_taxonomy
+dependencies[] = subscriptions_content
+dependencies[] = taxonomy
+dependencies[] = views
+dependencies[] = views_ui
+
+files[] = cites_custom_forum.test
+
+; Information added by fserver
+core = "7.x"
+datestamp = "1400595690"
+project = "cites"
+project status url = "http://fserver.eaudeweb.ro/fserver"
+version = "7.x-1.6"

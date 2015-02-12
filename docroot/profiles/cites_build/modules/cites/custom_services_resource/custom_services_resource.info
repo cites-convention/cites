@@ -1,0 +1,12 @@
+name = Custom Services Resource
+description = CITES Custom Services Resource - Formatters
+package = CITES
+dependencies[] = services
+core = 7.x
+
+; Information added by fserver
+core = "7.x"
+datestamp = "1400595690"
+project = "cites"
+project status url = "http://fserver.eaudeweb.ro/fserver"
+version = "7.x-1.6"

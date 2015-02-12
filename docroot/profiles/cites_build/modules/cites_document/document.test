@@ -1,0 +1,89 @@
+<?php
+
+/**
+ * @file
+ * Simpletest case for CITES Document module.
+ *
+ * Verify CITES Document module functionality.
+ */
+
+/**
+ * Functionality tests for CITES Document module.
+ */
+class DocumentTestCase extends DrupalWebTestCase {
+
+	protected static $bundle;
+
+	public static function getInfo() {
+		return array(
+			'name' => 'Document Content Type',
+			'description' => 'Verify CITES Document module functionality.',
+			'group' => 'CITES',
+		);
+	}
+
+	function setUp() {
+		//Set installation profile
+		$this->profile = 'cites_build';
+		//Enable the module.
+		parent::setUp('document');
+		self::$bundle = Document::$bundle;
+	}
+
+	/**
+	* API-level content type test.
+	*
+	* This test will verify that when the module is installed, it:
+	*   - Adds a new content type, meeting.
+	*   - Attaches all defined fields.
+	*/
+	function test_installation_api() {
+		// At this point, the module should be installed.
+		// First check for our content type and then for it s attached fields.
+		$node_type = node_type_get_type('document');
+		$this->assertTrue($node_type, 'Document was created.', 'API');
+
+		$fields = _document_installed_instances();
+		foreach (array_keys($fields) as $field_name) {
+			$field = field_info_instance('node', $field_name, 'document');
+			$this->assertTrue($field, 'Field: ' . $field_name . ' was attached to document.', 'API');
+		}
+	}
+
+	/**
+	* Verify the functionality of the country module.
+	*/
+	function test_node_create_post() {
+		// Create and login user.
+		$account = $this->drupalCreateUser(array('access content', 'create document content'));
+		$this->drupalLogin($account);
+
+		CitesBase::vocabulary_get_or_create_term('TIP 1', VOC_DOCUMENT_TYPE);
+		CitesBase::vocabulary_get_or_create_term('STATUS 1', VOC_DOCUMENT_STATUS);
+
+		$language = 'und';
+		// Create a new node.
+		$edit = array(
+			"title_field[$language][0][value]" => $this->randomName(),
+			"body[$language][0][value]" => 'Looooooong text for body field',
+//			"field_document_type[$language][0][tid]" => $type->tid,
+//			"field_document_status" => '',
+			"field_document_no[$language][0][value]" => 'CDR-127',
+//			"field_document_files" => '',
+		);
+		$this->drupalPost('node/add/document', $edit, t('Save'));
+		$this->assertText("Document " . $edit["title_field[$language][0][value]"] . " has been created.", "Found node creation message");
+	}
+
+	function test_node_create() {
+		$node = Document::node_create('Test Document', TRUE);
+		CitesBase::set_field_single_value($node, 'field_document_no', array('field_document_no' => 'CDR-127'));
+		CitesBase::set_field_single_value($node, 'body', array('body' => 'Looooooong text for body field'));
+//		CitesBase::set_field_taxonomic_term($node, 'field_document_type', VOC_DOCUMENT_TYPE, array('field_document_type' => 'TIP 1'));
+		node_save($node);
+		$node = node_load($node->nid);
+		$this->assertEqual('Test Document', $node->title);
+		$this->assertEqual('CDR-127', CitesBase::get_field_single_value($node, 'field_document_no'));
+		$this->assertEqual('Looooooong text for body field', CitesBase::get_field_single_value($node, 'body'));
+	}
+}

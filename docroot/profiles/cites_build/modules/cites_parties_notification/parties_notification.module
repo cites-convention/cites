@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the parties_notification feature.
+ */
+
+include_once 'parties_notification.features.inc';

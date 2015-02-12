@@ -1,0 +1,1200 @@
+/* On The Web */
+
+#social-media {
+  line-height: 1;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+#social-media span,
+#social-media a {
+  display: inline-block;
+}
+
+#social-media span {
+  margin: 0 5px 5px;
+}
+
+#social-media a:hover img {
+  -webkit-filter: grayscale(1);
+  filter: gray;
+  filter: grayscale(1);
+  filter: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"grayscale\"><feColorMatrix type=\"saturate\" values=\"0\" /></filter></svg>#grayscale");
+}
+
+/* User Roles on Sign up page */
+
+div.form-item.form-type-checkboxes.form-item-roles {display:none;}
+
+/* Google Site Search */
+
+.content .searchhead {
+  margin-bottom: 0;
+}
+
+ol.google-search-results {
+  margin-top: 0;
+  padding-bottom: 0;
+  padding-left: 0; /* LTR */
+}
+
+.google-search-results .gss-result {
+  border-bottom: 1px solid #d5d3d0;
+  padding: 1em 0;
+}
+
+.google-search-results .gss-result img {
+  float: left; /* LTR */
+  margin-right: 1em; /* LTR */
+}
+
+.google-search-results .gss-result .gss-search-snippet-info .gss-search-snippet {
+  margin: 0;
+}
+
+.google-search-results .gss-result .gss-search-snippet-info .gss-search-url {
+  font-size: small;
+  font-style: normal;
+}
+
+div.google-search-pager ul.pager {
+  margin-bottom: 1em;
+  padding: 0;
+}
+
+
+
+/* Views Slideshow */
+
+.view .skin-default {
+  margin: 0 auto;
+  position: relative;
+  width: 480px;
+}
+
+.view .skin-default .views-slideshow-controls-text {
+  display: none;
+}
+
+.view .skin-default:hover .views-slideshow-controls-text {
+  display: block;
+}
+
+.views_slideshow_main {
+  -webkit-box-shadow: 0 1px 5px 0 #4a4a4a;
+  box-shadow: 0 1px 5px 0 #4a4a4a;
+  height: 289px;
+}
+
+.views-field-field-slide-image img {
+  display: block;
+}
+
+.views-field-field-slide-caption {
+  background-color: #000;
+  background-color: rgba(0, 0, 0, 0.75);
+  bottom: 0;
+  color: #fff;
+  font-size: 1em;
+  left: 0;
+  line-height: normal;
+  position: absolute;
+  right: 0;
+}
+
+.views-field-field-slide-caption a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.views-field-field-slide-caption a:active,
+.views-field-field-slide-caption a:focus,
+.views-field-field-slide-caption a:hover {
+  color: #ff6633;
+  text-decoration: none;
+}
+
+.views-field-field-slide-caption p {
+  margin: 5px;
+}
+
+.views-slideshow-pager-fields {
+  line-height: 1;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.views-slideshow-pager-field-item {
+  background: url("../images/bullets.png") no-repeat;
+  cursor: pointer;
+  display: inline-block;
+  height: 22px;
+  width: 22px;
+}
+
+.views-slideshow-pager-field-item.active {
+  background-position: 0 -22px;
+}
+
+.views-slideshow-controls-text span {
+  position: absolute;
+  top: 129px;
+  z-index: 900;
+}
+
+.views-slideshow-controls-text-previous {
+  left: 15px; /* LTR */
+}
+
+.views-slideshow-controls-text-pause {
+  display: none;
+}
+
+.views-slideshow-controls-text-next {
+  right: 15px; /* LTR */
+}
+
+.views-slideshow-controls-text-previous,
+.views-slideshow-controls-text-next {
+  background: url("../images/arrows.png") no-repeat;
+  height: 30px;
+  overflow: hidden;
+  text-indent: -9999px;
+  width: 30px;
+}
+
+.views-slideshow-controls-text-next {
+  background-position: -30px 0; /* LTR */
+}
+
+
+
+/* National contacts & information view (block) */
+
+#block-views-f384cdcef493c440cb0cfbfd9324ce62 > div.content > div {
+    height: 500px; 
+    overflow-y: scroll;
+}
+
+
+
+/* CITES Virtual College (block) */
+
+#sidebar-first #block-block-1 {
+  border: 0;
+}
+
+#sidebar-first #block-block-1 .content {
+  padding: 0;
+}
+
+#sidebar-first #block-block-1 .content p {
+  margin-bottom: 0.4em;
+  text-align: center;
+}
+
+#sidebar-first #block-block-1 .content img {
+  vertical-align: middle;
+}
+
+
+
+/* CITES Trade Dashboard (block) */
+
+#sidebar-first #block-block-2 {
+  border: 0;
+}
+
+#sidebar-first #block-block-2 .content {
+  padding: 0;
+}
+
+#sidebar-first #block-block-2 .content p {
+  margin-bottom: 0.4em;
+  text-align: center;
+}
+
+#sidebar-first #block-block-2 .content img {
+  vertical-align: middle;
+}
+
+
+
+/* The InforMEA portal (block) */
+
+#sidebar-first #block-block-3 {
+  border: 0;
+}
+
+#sidebar-first #block-block-3 .content {
+  padding: 0;
+}
+
+#sidebar-first #block-block-3 .content p {
+  margin-bottom: 0.4em;
+  text-align: center;
+}
+
+#sidebar-first #block-block-3 .content img {
+  vertical-align: middle;
+}
+
+
+
+/* Simplenews (block) */
+
+#sidebar-second #block-simplenews-0 .content {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#sidebar-second #block-simplenews-0 .content p {
+  margin: 0;
+  font-weight: bold;
+  text-align: center;
+}
+
+#sidebar-second #block-simplenews-0 .content a {
+  text-decoration: none;
+}
+
+#sidebar-second #block-simplenews-0 .content a:hover,
+#sidebar-second #block-simplenews-0 .content a:active,
+#sidebar-second #block-simplenews-0 .content a:focus {
+  text-decoration: underline;
+}
+
+
+
+/* Highlights (block) */
+
+#sidebar-second #block-block-4 .content {
+  padding: 0;
+}
+
+#sidebar-second #block-block-4 .content p {
+  margin: 1px;
+  text-align: center;
+}
+
+#sidebar-second #block-block-4 .content img {
+  vertical-align: middle;
+}
+
+#sidebar-second #block-block-4 .content hr {
+  margin: 0;
+}
+
+#sidebar-second #block-block-4 .content a.more-link {
+  background: url("../images/arrow-right-orange.gif") 10px 5px no-repeat; /* LTR */
+  display: block;
+  padding: 3px 10px 3px 30px; /* LTR */
+  text-align: left; /* LTR */
+}
+
+
+
+/* News (block) */
+
+#content #block-views-news-block .content a,
+#content #block-views-news-block-sharks .content a {
+  color: #333;
+  text-decoration: none;
+}
+
+#content #block-views-news-block .content a:active,
+#content #block-views-news-block-sharks .content a:active,
+#content #block-views-news-block .content a:focus,
+#content #block-views-news-block-sharks .content a:focus,
+#content #block-views-news-block .content a:hover,
+#content #block-views-news-block-sharks .content a:hover {
+  color: #ff6633;
+  text-decoration: underline;
+}
+
+#content #block-views-news-block .content .more-link,
+#content #block-views-news-block-sharks .content .more-link {
+  margin: 0.6em 0 1.2em;
+  padding-left: 2em; /* LTR */
+  text-align: left; /* LTR */
+}
+
+#content #block-views-news-block .content .more-link a,
+#content #block-views-news-block-sharks .content .more-link a {
+  font-size: 0.85em;
+}
+
+
+/* News (page) */
+
+#content .view-news.view-display-id-page ul,
+#content .view-news.view-display-id-page_sharks ul {
+  list-style-image: url("../images/bullet-arrow-green.gif");
+}
+
+
+
+/* Notification to the Parties (block) */
+
+#content #block-views-parties-notification-block .content span.views-field-field-notification-annexes:before {
+  content: url("../images/arrow-right-green-lg.gif");
+}
+
+#content #block-views-parties-notification-block .content a {
+  color: #333;
+  text-decoration: none;
+}
+
+#content #block-views-parties-notification-block .content a:active,
+#content #block-views-parties-notification-block .content a:focus,
+#content #block-views-parties-notification-block .content a:hover {
+  color: #ff6633;
+  text-decoration: underline;
+}
+
+#content #block-views-parties-notification-block .content .file-icon {
+  display: none;
+}
+
+#content #block-views-parties-notification-block .content .more-link {
+  margin: 0.6em 0 1.2em;
+  padding-left: 2em; /* LTR */
+  text-align: left; /* LTR */
+}
+
+#content #block-views-parties-notification-block .content .more-link a {
+  font-size: 0.85em;
+}
+
+
+/* Notification to the Parties (page) */
+
+
+th.views-field.views-field-nothing {
+  width:100%;
+}
+
+.view-parties-notification.view-display-id-page #edit-date-filter-min-wrapper,
+.view-parties-notification.view-display-id-page #edit-date-filter-max-wrapper,
+.view-parties-notification.view-display-id-page #edit-date-filter-min-wrapper label,
+.view-parties-notification.view-display-id-page #edit-date-filter-max-wrapper label {
+  float: left; /* LTR */
+}
+
+.view-parties-notification.view-display-id-page #edit-date-filter-min-wrapper label,
+.view-parties-notification.view-display-id-page #edit-date-filter-max-wrapper label {
+  margin-right: 0.5em; /* LTR */
+  padding: 4px 0;
+}
+
+.view-parties-notification.view-display-id-page caption {
+  background-color: #f0ede6;
+  border: 1px solid #ccc;
+  border-bottom: 0;
+  color: #333;
+  font-weight: bold;
+  padding: 4px 9px;
+  text-align: center;
+}
+
+.view-parties-notification.view-display-id-page tr th {
+  background-color: #f0ede6;
+  color: #333;
+  text-align: center;
+}
+
+.view-parties-notification.view-display-id-page tr td,
+.view-parties-notification.view-display-id-page tr th {
+  border: 1px solid #ccc;
+}
+
+.view-parties-notification.view-display-id-page tr,
+.view-parties-notification.view-display-id-page tr.even,
+.view-parties-notification.view-display-id-page tr.odd {
+  background-color: #fafaf6;
+}
+
+.view-parties-notification.view-display-id-page span.status {
+  display: inline-block;
+  height: 16px;
+  overflow: hidden;
+  text-indent: -9999px;
+  vertical-align: middle;
+  width: 18px;
+}
+
+.view-parties-notification.view-display-id-page span.status.status-0 {
+  background: url("../images/status-invalid.gif") no-repeat;
+}
+
+.view-parties-notification.view-display-id-page span.status.status-1 {
+  background: url("../images/status-valid.gif") no-repeat;
+}
+
+.view-parties-notification.view-display-id-page ul {
+  list-style-image: url("../images/bullet-rhomb-green.gif");
+  list-style-position: inside;
+  margin: 0 -9px;
+  padding: 0;
+}
+
+.view-parties-notification.view-display-id-page ul li {
+  border-top: 1px solid #ccc;
+  margin-top: 4px;
+  padding: 4px 9px 0;
+}
+
+.view-parties-notification.view-display-id-page .file-icon {
+  float: right;
+}
+
+.view-parties-notification.view-display-id-page a {
+  color: #333;
+  text-decoration: none;
+}
+
+.view-parties-notification.view-display-id-page a:active,
+.view-parties-notification.view-display-id-page a:focus,
+.view-parties-notification.view-display-id-page a:hover {
+  color: #ff6633;
+}
+
+/* Vacancy Announcements */
+
+#content #block-views-news-block-vacancies .content a {
+  color: #333;
+  text-decoration: none;
+}
+
+#content #block-views-news-block-vacancies .content a:active,
+#content #block-views-news-block-vacancies .content a:focus,
+#content #block-views-news-block-vacancies .content a:hover {
+  color: #ff6633;
+  text-decoration: underline;
+}
+
+
+
+
+/* The Standing Committee (page) */
+
+.view-the-standing-committee.view-display-id-page table {
+  width: 100%;
+}
+
+.view-the-standing-committee.view-display-id-page tr th {
+  background-color: #f0ede6;
+  color: #333;
+  text-align: center;
+}
+
+.view-the-standing-committee.view-display-id-page tr td,
+.view-the-standing-committee.view-display-id-page tr th {
+  border: 1px solid #ccc;
+}
+
+.view-the-standing-committee.view-display-id-page tr,
+.view-the-standing-committee.view-display-id-page tr.even,
+.view-the-standing-committee.view-display-id-page tr.odd {
+  background-color: #fafaf6;
+}
+
+.view-the-standing-committee.view-display-id-page th.views-field-body {
+  width: 35%;
+}
+
+
+
+/* Calendar (block) */
+
+#content #block-views-calendar-block .content a,
+#content #block-views-calendar-block-sharks .content a {
+  color: #333;
+  text-decoration: none;
+}
+
+#content #block-views-calendar-block .content a:active,
+#content #block-views-calendar-block-sharks .content a:active,
+#content #block-views-calendar-block .content a:focus,
+#content #block-views-calendar-block-sharks .content a:focus,
+#content #block-views-calendar-block .content a:hover,
+#content #block-views-calendar-block-sharks .content a:hover {
+  color: #ff6633;
+  text-decoration: underline;
+}
+
+#content #block-views-calendar-block .content .field-content p,
+#content #block-views-calendar-block-sharks .content .field-content p {
+  display: inline;
+}
+
+#content #block-views-calendar-block .content .more-link,
+#content #block-views-calendar-block-sharks .content .more-link {
+  margin: 0.6em 0 1.2em;
+  padding-left: 2em; /* LTR */
+  text-align: left; /* LTR */
+}
+
+#content #block-views-calendar-block .content .more-link a,
+#content #block-views-calendar-block-sharks .content .more-link a {
+  font-size: 0.85em;
+}
+
+
+/* Calendar (page) */
+
+#content .view-calendar.view-display-id-page ul,
+#content .view-calendar.view-display-id-page_sharks ul {
+  list-style-image: url("../images/bullet-arrow-green.gif");
+}
+
+#content .view-calendar.view-display-id-page h3,
+#content .view-calendar.view-display-id-page_sharks h3 {
+  background-color: #efeeec;
+  text-align: center;
+}
+
+#content .view-calendar.view-display-id-page .field-content p,
+#content .view-calendar.view-display-id-page_sharks .field-content p {
+  display: inline;
+}
+
+
+
+/* External news (block) */
+
+#sidebar-second #block-views-external-news-block .content {
+  padding: 0;
+}
+
+#sidebar-second #block-views-external-news-block .content ul,
+#sidebar-second #block-views-external-news-block .content ul li {
+  list-style: none;
+  padding: 0;
+}
+
+#sidebar-second #block-views-external-news-block .content a {
+  border-bottom: 1px dotted #d8cfbe;
+  color: #333;
+  display: block;
+  padding: 3px 10px;
+  text-decoration: none;
+}
+
+#sidebar-second #block-views-external-news-block .content a:active,
+#sidebar-second #block-views-external-news-block .content a:focus,
+#sidebar-second #block-views-external-news-block .content a:hover {
+  background-color: #f0ede6;
+}
+
+#sidebar-second #block-views-external-news-block .content .more-link {
+  text-align: left;
+}
+
+#sidebar-second #block-views-external-news-block .content .more-link a {
+  background-image: url("../images/arrow-right-orange.gif");
+  background-position: 10px 5px; /* LTR */
+  background-repeat: no-repeat;
+  border: 0;
+  padding-left: 30px; /* LTR */
+}
+
+
+/* External news (page) */
+
+#content .view-external-news.view-display-id-page h3 {
+  color: #336600;
+  text-align: center;
+}
+
+#content .view-external-news.view-display-id-page ul {
+  list-style-image: url("../images/bullet-rhomb-green.gif");
+}
+
+
+
+/* Press releases (page) */
+
+#content .view-press-releases.view-display-id-page ul {
+  list-style-image: url("../images/bullet-arrow-green.gif");
+}
+
+
+
+/* Resolutions (page) */
+
+.view-resolutions.view-display-id-page .view-header a {
+  font-weight: bold;
+}
+
+.view-resolutions.view-display-id-page .view-content {
+  margin-bottom: 11px;
+}
+
+.view-resolutions.view-display-id-page table {
+  margin: 0 0 -1px;
+  width: 100%;
+}
+
+.view-resolutions.view-display-id-page caption {
+  background-color: #f0ede6;
+  border: 1px solid #ccc;
+  border-bottom: 0;
+  color: #333;
+  font-weight: bold;
+  padding: 4px 9px;
+  text-align: center;
+}
+
+.view-resolutions.view-display-id-page tr td,
+.view-resolutions.view-display-id-page tr th {
+  border: 1px solid #ccc;
+}
+
+.view-resolutions.view-display-id-page tr,
+.view-resolutions.view-display-id-page tr.even,
+.view-resolutions.view-display-id-page tr.odd {
+  background-color: #fafaf6;
+}
+
+.view-resolutions.view-display-id-page td.views-field-field-document-no {
+  width: 21%;
+}
+
+.view-resolutions.view-display-id-page td.views-field-field-document-files {
+  width: 6%;
+}
+
+.view-resolutions.view-display-id-page a {
+  text-decoration: none;
+}
+
+
+
+/* Decisions (page) */
+
+.page-dec .region-help {
+  border: 0;
+  padding: 0;
+}
+
+.view-decisions.view-display-id-page .view-content {
+  margin-bottom: 11px;
+}
+
+.view-decisions.view-display-id-page .view-grouping-header,
+.view-decisions.view-display-id-page caption {
+  background-color: #f0ede6;
+  border: 1px solid #ccc;
+  border-bottom: 0;
+  color: #333;
+  font-weight: bold;
+  padding: 4px 9px;
+  text-align: center;
+}
+
+.view-decisions.view-display-id-page table {
+  margin: 0 0 -1px;
+  width: 100%;
+}
+
+.view-decisions.view-display-id-page tr td,
+.view-decisions.view-display-id-page tr th {
+  border: 1px solid #ccc;
+}
+
+.view-decisions.view-display-id-page tr,
+.view-decisions.view-display-id-page tr.even,
+.view-decisions.view-display-id-page tr.odd {
+  background-color: #fafaf6;
+}
+
+.view-decisions.view-display-id-page td.views-field-field-document-decisions-groups {
+  width: 20%;
+}
+
+.view-decisions.view-display-id-page a {
+  color: #000;
+  text-decoration: none;
+}
+
+.view-decisions.view-display-id-page a:active,
+.view-decisions.view-display-id-page a:focus,
+.view-decisions.view-display-id-page a:hover {
+  color: #ff6633;
+}
+
+
+
+/* Reports (page) */
+
+.view-biennial-reports.view-display-id-page table {
+  width: 100%;
+}
+
+.view-biennial-reports.view-display-id-page caption {
+  background-color: #f0ede6;
+  border: 1px solid #ccc;
+  border-bottom: 0;
+  color: #333;
+  font-weight: bold;
+  padding: 4px 9px;
+  text-align: center;
+}
+
+.view-biennial-reports.view-display-id-page tr th {
+  background-color: #f0ede6;
+  color: #333;
+}
+
+.view-biennial-reports.view-display-id-page tr td,
+.view-biennial-reports.view-display-id-page tr th {
+  border: 1px solid #ccc;
+}
+
+.view-biennial-reports.view-display-id-page tr,
+.view-biennial-reports.view-display-id-page tr.even,
+.view-biennial-reports.view-display-id-page tr.odd {
+  background-color: #fafaf6;
+}
+
+.view-biennial-reports.view-display-id-page .views-field-field-report-date {
+  width: 20%;
+}
+
+.view-biennial-reports.view-display-id-page a {
+  text-decoration: none;
+}
+
+
+
+/* National contacts & information (block) */
+
+#sidebar-first #block-views-f384cdcef493c440cb0cfbfd9324ce62 {
+  border: 0;
+}
+
+#sidebar-first #block-views-f384cdcef493c440cb0cfbfd9324ce62 .content {
+  padding: 0;
+}
+
+#sidebar-first #block-views-f384cdcef493c440cb0cfbfd9324ce62 .content a {
+  background-color: #efeeec;
+  border-bottom: 1px solid #fff;
+  color: #666;
+  display: block;
+  padding: 3px 10px;
+  text-decoration: none;
+}
+
+#sidebar-first #block-views-f384cdcef493c440cb0cfbfd9324ce62 .content a:active {
+  color: #000;
+}
+
+#sidebar-first #block-views-f384cdcef493c440cb0cfbfd9324ce62 .content a:focus,
+#sidebar-first #block-views-f384cdcef493c440cb0cfbfd9324ce62 .content a:hover {
+  background-color: #567b29;
+  color: #fff;
+}
+
+
+
+/* National contacts & information (page) */
+
+.view-national-contacts-and-information.view-display-id-page_contacts .views-field-field-contact-note-before-1,
+.view-national-contacts-and-information.view-display-id-page_contacts .views-field-field-contact-note-before-3 {
+  margin: 10px 0;
+}
+
+.view-national-contacts-and-information.view-display-id-page_contacts table,
+.view-national-contacts-and-information.view-display-id-page_reports table,
+.view-national-contacts-and-information.view-display-id-page_registers table {
+  width: 100%;
+}
+
+.view-national-contacts-and-information.view-display-id-page_contacts tr th,
+.view-national-contacts-and-information.view-display-id-page_reports tr th,
+.view-national-contacts-and-information.view-display-id-page_registers tr th {
+  background-color: #f0ede6;
+  color: #333;
+}
+
+.view-national-contacts-and-information.view-display-id-page_contacts tr td,
+.view-national-contacts-and-information.view-display-id-page_reports tr td,
+.view-national-contacts-and-information.view-display-id-page_registers tr td,
+.view-national-contacts-and-information.view-display-id-page_contacts tr th,
+.view-national-contacts-and-information.view-display-id-page_reports tr th,
+.view-national-contacts-and-information.view-display-id-page_registers tr th {
+  border: 1px solid #ccc;
+}
+
+.view-national-contacts-and-information.view-display-id-page_contacts tr,
+.view-national-contacts-and-information.view-display-id-page_reports tr,
+.view-national-contacts-and-information.view-display-id-page_registers tr,
+.view-national-contacts-and-information.view-display-id-page_contacts tr.even,
+.view-national-contacts-and-information.view-display-id-page_reports tr.even,
+.view-national-contacts-and-information.view-display-id-page_registers tr.even,
+.view-national-contacts-and-information.view-display-id-page_contacts tr.odd,
+.view-national-contacts-and-information.view-display-id-page_reports tr.odd,
+.view-national-contacts-and-information.view-display-id-page_registers tr.odd {
+  background-color: #fafaf6;
+}
+
+.view-national-contacts-and-information.view-display-id-page_reports .views-field-field-report-date {
+  width: 20%;
+}
+
+
+
+/* Register of captive-breeding operations (block) */
+
+#sidebar-first #block-views-624181da01d2834d06a332e3ef47c9f4 {
+  border: 0;
+}
+
+#sidebar-first #block-views-624181da01d2834d06a332e3ef47c9f4 .content {
+  padding: 0;
+}
+
+#sidebar-first #block-views-624181da01d2834d06a332e3ef47c9f4 .content a {
+  background-color: #efeeec;
+  border-bottom: 1px solid #fff;
+  color: #666;
+  display: block;
+  padding: 3px 10px;
+  text-decoration: none;
+}
+
+#sidebar-first #block-views-624181da01d2834d06a332e3ef47c9f4 .content a:active {
+  color: #000;
+}
+
+#sidebar-first #block-views-624181da01d2834d06a332e3ef47c9f4 .content a:focus,
+#sidebar-first #block-views-624181da01d2834d06a332e3ef47c9f4 .content a:hover {
+  background-color: #567b29;
+  color: #fff;
+}
+
+
+
+/* Register of captive-breeding operations (page) */
+
+#content .view-register-of-captive-breeding-operations.view-display-id-page h3 {
+  background-color: #eef9f2;
+  text-align: center;
+}
+
+.view-register-of-captive-breeding-operations.view-display-id-page_summary tr th {
+  background-color: #f0ede6;
+  color: #333;
+  text-align: center;
+}
+
+.view-register-of-captive-breeding-operations.view-display-id-page_summary tr td,
+.view-register-of-captive-breeding-operations.view-display-id-page_summary tr th {
+  border: 1px solid #ccc;
+}
+
+.view-register-of-captive-breeding-operations.view-display-id-page_summary tr,
+.view-register-of-captive-breeding-operations.view-display-id-page_summary tr.even,
+.view-register-of-captive-breeding-operations.view-display-id-page_summary tr.odd {
+  background-color: #fafaf6;
+}
+
+
+
+/* Register of nurseries (block) */
+
+#sidebar-first #block-views-register-of-nurseries-block {
+  border: 0;
+}
+
+#sidebar-first #block-views-register-of-nurseries-block .content {
+  padding: 0;
+}
+
+#sidebar-first #block-views-register-of-nurseries-block .content a {
+  background-color: #efeeec;
+  border-bottom: 1px solid #fff;
+  color: #666;
+  display: block;
+  padding: 3px 10px;
+  text-decoration: none;
+}
+
+#sidebar-first #block-views-register-of-nurseries-block .content a:active {
+  color: #000;
+}
+
+#sidebar-first #block-views-register-of-nurseries-block .content a:focus,
+#sidebar-first #block-views-register-of-nurseries-block .content a:hover {
+  background-color: #567b29;
+  color: #fff;
+}
+
+
+
+/* Register of nurseries (page) */
+
+#content .view-register-of-nurseries.view-display-id-page h3 {
+  background-color: #eef9f2;
+  text-align: center;
+}
+
+.view-register-of-nurseries.view-display-id-page_summary table {
+  width: 100%;
+}
+
+.view-register-of-nurseries.view-display-id-page_summary tr th {
+  background-color: #f0ede6;
+  color: #333;
+  text-align: center;
+}
+
+.view-register-of-nurseries.view-display-id-page_summary tr td,
+.view-register-of-nurseries.view-display-id-page_summary tr th {
+  border: 1px solid #ccc;
+}
+
+.view-register-of-nurseries.view-display-id-page_summary tr,
+.view-register-of-nurseries.view-display-id-page_summary tr.even,
+.view-register-of-nurseries.view-display-id-page_summary tr.odd {
+  background-color: #fafaf6;
+}
+
+
+
+/* Register of scientific institutions (block) */
+
+#sidebar-first #block-views-88b6e49496d3702e036ebfaac10168cd {
+  border: 0;
+}
+
+#sidebar-first #block-views-88b6e49496d3702e036ebfaac10168cd .content {
+  padding: 0;
+}
+
+#sidebar-first #block-views-88b6e49496d3702e036ebfaac10168cd .content a {
+  background-color: #efeeec;
+  border-bottom: 1px solid #fff;
+  color: #666;
+  display: block;
+  padding: 3px 10px;
+  text-decoration: none;
+}
+
+#sidebar-first #block-views-88b6e49496d3702e036ebfaac10168cd .content a:active {
+  color: #000;
+}
+
+#sidebar-first #block-views-88b6e49496d3702e036ebfaac10168cd .content a:focus,
+#sidebar-first #block-views-88b6e49496d3702e036ebfaac10168cd .content a:hover {
+  background-color: #567b29;
+  color: #fff;
+}
+
+
+
+/* Register of scientific institutions (page) */
+
+.view-register-of-scientific-institutions.view-display-id-page table {
+  width: 100%;
+}
+
+.view-register-of-scientific-institutions.view-display-id-page tr th {
+  background-color: #f0ede6;
+  color: #333;
+  text-align: center;
+}
+
+.view-register-of-scientific-institutions.view-display-id-page tr td,
+.view-register-of-scientific-institutions.view-display-id-page tr th {
+  border: 1px solid #ccc;
+}
+
+.view-register-of-scientific-institutions.view-display-id-page tr,
+.view-register-of-scientific-institutions.view-display-id-page tr.even,
+.view-register-of-scientific-institutions.view-display-id-page tr.odd {
+  background-color: #fafaf6;
+}
+
+.view-register-of-scientific-institutions.view-display-id-page_summary table {
+  width: 100%;
+}
+
+.view-register-of-scientific-institutions.view-display-id-page_summary tr th {
+  background-color: #f0ede6;
+  color: #333;
+  text-align: center;
+}
+
+.view-register-of-scientific-institutions.view-display-id-page_summary tr td,
+.view-register-of-scientific-institutions.view-display-id-page_summary tr th {
+  border: 1px solid #ccc;
+}
+
+.view-register-of-scientific-institutions.view-display-id-page_summary tr,
+.view-register-of-scientific-institutions.view-display-id-page_summary tr.even,
+.view-register-of-scientific-institutions.view-display-id-page_summary tr.odd {
+  background-color: #fafaf6;
+}
+
+
+
+/* Register of caviar exporters (block) */
+
+#sidebar-first #block-views-bda9eec958edfeb8e43bcbd424fd9ee2 {
+  border: 0;
+}
+
+#sidebar-first #block-views-bda9eec958edfeb8e43bcbd424fd9ee2 .content {
+  padding: 0;
+}
+
+#sidebar-first #block-views-bda9eec958edfeb8e43bcbd424fd9ee2 .content a {
+  background-color: #efeeec;
+  border-bottom: 1px solid #fff;
+  color: #666;
+  display: block;
+  padding: 3px 10px;
+  text-decoration: none;
+}
+
+#sidebar-first #block-views-bda9eec958edfeb8e43bcbd424fd9ee2 .content a:active {
+  color: #000;
+}
+
+#sidebar-first #block-views-bda9eec958edfeb8e43bcbd424fd9ee2 .content a:focus,
+#sidebar-first #block-views-bda9eec958edfeb8e43bcbd424fd9ee2 .content a:hover {
+  background-color: #567b29;
+  color: #fff;
+}
+
+
+
+/* Register of caviar exporters (page) */
+
+.view-register-of-caviar-exporters.view-display-id-page table {
+  width: 100%;
+}
+
+.view-register-of-caviar-exporters.view-display-id-page tr th {
+  background-color: #f0ede6;
+  color: #333;
+  text-align: center;
+}
+
+.view-register-of-caviar-exporters.view-display-id-page tr td,
+.view-register-of-caviar-exporters.view-display-id-page tr th {
+  border: 1px solid #ccc;
+}
+
+.view-register-of-caviar-exporters.view-display-id-page tr,
+.view-register-of-caviar-exporters.view-display-id-page tr.even,
+.view-register-of-caviar-exporters.view-display-id-page tr.odd {
+  background-color: #fafaf6;
+}
+
+
+
+/* Trade suspensions */
+
+.view-trade-suspension.view-display-id-page .view-header a {
+  font-weight: bold;
+}
+
+.view-trade-suspension.view-display-id-page table {
+  width: 100%;
+}
+
+.view-trade-suspension.view-display-id-page tr th {
+  background-color: #f0ede6;
+  color: #333;
+}
+
+.view-trade-suspension.view-display-id-page tr td,
+.view-trade-suspension.view-display-id-page tr th {
+  border: 1px solid #ccc;
+}
+
+.view-trade-suspension.view-display-id-page tr,
+.view-trade-suspension.view-display-id-page tr.even,
+.view-trade-suspension.view-display-id-page tr.odd {
+  background-color: #fafaf6;
+}
+
+.view-trade-suspension.view-display-id-page a {
+  text-decoration: none;
+}
+
+
+/* Sharks and manta rays */
+
+.page-node-10550 .region-help {
+  border: 0;
+  padding: 0;
+}
+
+/* Secretary-General's statements (page) */
+
+.view-id-secretary_general_s_statements.view-display-id-page div.views-field.views-field-view-node {
+    background-image: url("../images/arrow-right-orange.gif");
+    background-repeat: no-repeat;
+    background-position: left top;
+    padding-top: 23px;
+    margin-bottom: 21px;
+}
+
+.view-id-secretary_general_s_statements.view-display-id-page span.field-content {
+    position:relative;
+    top: -27px;
+    left: 21px;
+}
+
+.view-id-secretary_general_s_statements.view-display-id-page div.views-field.views-field-view-node {
+    position:relative;
+    left: 6px;
+    top: 21px;
+}
+
+.view-id-secretary_general_s_statements.view-display-id-page div.views-field.views-field-body {
+    position:relative;
+    top: 10px;
+}
+
+.view-register-of-caviar-exporters.view-id-register_of_caviar_exporters.view-display-id-page th.views-field.views-field-title-field.views-align-center {
+	width:27%;
+}
+
+/* List of Contracting parties */
+/*view view-list-of-contracting-parties view-id-list_of_contracting_parties view-display-id-page view-dom-id-1ea09b058da1f03e8df557011ff296dc*/
+
+.view-list-of-contracting-parties.view-id-list_of_contracting_parties.view-display-id-page th.views-field.views-field-field-country-official-name.views-align-left {
+    background-color: #f0ede6;  border: 1px solid #ccc;  
+    border-bottom: 1px solid #ccc;  color: #333;  font-weight: bold;  padding: 4px 9px;  text-align: center;
+    width: 250px;
+}
+.view-list-of-contracting-parties.view-id-list_of_contracting_parties.view-display-id-page th.views-field.views-field-field-country-iso2.views-align-center {
+    background-color: #f0ede6;  border: 1px solid #ccc;  border-bottom: 1px solid #ccc;  color: #333;  font-weight: bold;  padding: 4px 9px;  text-align: center;  
+    width: 30px;
+}
+.view-list-of-contracting-parties.view-id-list_of_contracting_parties.view-display-id-page th.views-field.views-field-field-country-region.views-align-left {
+    background-color: #f0ede6;  border: 1px solid #ccc;  border-bottom: 1px solid #ccc;  color: #333;  font-weight: bold;  padding: 4px 9px;  text-align: center;  
+    width: 252px;
+}
+.view-list-of-contracting-parties.view-id-list_of_contracting_parties.view-display-id-page th.views-field.views-field-field-country-type.views-align-center {
+    background-color: #f0ede6;  border: 1px solid #ccc;  border-bottom: 1px solid #ccc;  color: #333;  font-weight: bold;  padding: 4px 9px;  text-align: center;  
+    width: 88px;
+}
+.view-list-of-contracting-parties.view-id-list_of_contracting_parties.view-display-id-page th.views-field.views-field-field-country-date-of-joining.active.views-align-center {
+    background-color: #f0ede6;  border: 1px solid #ccc;  border-bottom: 1px solid #ccc;  color: #333;  font-weight: bold;  padding: 4px 9px;  text-align: center;  
+    width: 115px;
+}
+.view-list-of-contracting-parties.view-id-list_of_contracting_parties.view-display-id-page th.views-field.views-field-field-country-entry-into-force.views-align-center {
+    background-color: #f0ede6;  border: 1px solid #ccc;  border-bottom: 1px solid #ccc;  color: #333;  font-weight: bold;  padding: 4px 9px;  text-align: center;  
+    width: 82px;
+
+}
+.view-list-of-contracting-parties.view-id-list_of_contracting_parties.view-display-id-page table.views-table.cols-6 {
+    border: 1px solid #ccc;
+}

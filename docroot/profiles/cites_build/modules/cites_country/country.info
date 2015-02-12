@@ -1,0 +1,14 @@
+name = CITES Country module
+description = Provides support for country data type
+core = 7.x
+package = CITES
+project status url = http://fserver.eaudeweb.ro/fserver
+
+files[] = country.test
+
+; Information added by fserver
+core = "7.x"
+datestamp = "1386627185"
+project = "cites_country"
+project status url = "http://fserver.eaudeweb.ro/fserver"
+version = "7.x-1.6"

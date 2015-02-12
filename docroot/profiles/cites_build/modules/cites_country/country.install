@@ -1,0 +1,320 @@
+<?php
+
+/**
+ * Implements hook_install()
+ */
+function country_install() {
+  menu_rebuild();
+
+  //add permissions for administrator
+  $permissions = array(
+    'create country content' => TRUE,
+    'edit own country content' => TRUE,
+    'edit any country content' => TRUE,
+    'delete own country content' => TRUE,
+    'delete any country content' => TRUE
+  );
+
+  CitesBase::role_add_permissions('administrator', $permissions);
+
+  if (module_exists('entity_translation')) {
+    variable_set('language_content_type_country', ENTITY_TRANSLATION_ENABLED);
+    variable_set('entity_translation_hide_translation_links_country', 1);
+
+    $et_settings_node = variable_get('entity_translation_settings_node__country');
+
+    $et_settings_node['default_language'] = ENTITY_TRANSLATION_LANGUAGE_DEFAULT;
+    $et_settings_node['hide_language_selector'] = FALSE;
+
+    variable_set('entity_translation_settings_node__country', $et_settings_node);
+  }
+
+  country_add_taxonomies();
+
+  // Add the body field for country content type
+  $types = node_type_get_types();
+  node_add_body_field($types['country']);
+}
+
+/**
+ * Create 'country_category' and 'country_type' vocabulary
+ * Create taxonomy terms for 'country_category' and 'country_type' vocabularies
+ * Add fields 'field_country_category','field_country_dependent_teritory',
+ * 'field_country_date_of_joining','field_country_type','field_country_entry_into_force',
+ * 'field_country_entry_note'
+ */
+function country_update_7100() {
+  if (taxonomy_vocabulary_machine_name_load('country_category') == FALSE) {
+    taxonomy_vocabulary_save((object) array(
+          'name' => 'Country Category',
+          'machine_name' => 'country_category',
+          'description' => 'Country profile category'
+    ));
+  }
+
+  if (taxonomy_vocabulary_machine_name_load('country_type') == FALSE) {
+    taxonomy_vocabulary_save((object) array(
+          'name' => 'Country Type',
+          'machine_name' => 'country_type',
+          'description' => 'Country profile type'
+    ));
+  }
+
+  $vocabularies = taxonomy_vocabulary_get_names();
+  $country_categories = array(
+    'Party', 'Non-Party', 'Dependent territory'
+  );
+
+  foreach ($country_categories as $category) {
+    $term_array = taxonomy_get_term_by_name($category, 'country_category');
+    if (empty($term_array)) {
+      taxonomy_term_save((object) array(
+            'vid' => $vocabularies['country_category']->vid,
+            'name' => $category
+      ));
+    }
+  }
+
+  $country_types = array(
+    'Accession', 'Acceptance', 'Approval', 'Continuation', 'Ratification', 'Succession'
+  );
+  foreach ($country_types as $type) {
+    $term_array = taxonomy_get_term_by_name($type, 'country_type');
+    if (empty($term_array)) {
+      taxonomy_term_save((object) array(
+            'vid' => $vocabularies['country_type']->vid,
+            'name' => $type
+      ));
+    }
+  }
+
+  // Add the body field
+  $types = node_type_get_types();
+  node_add_body_field($types['country']);
+
+  $fields = array(
+    'field_country_category' => array(
+      'field_name' => 'field_country_category',
+      'cardinality' => 1,
+      'type' => 'taxonomy_term_reference',
+      'translatable' => 1,
+      'settings' => array(
+        'allowed_values' => array(
+          array(
+            'vocabulary' => 'country_category',
+            'parent' => 0,
+          ),
+        ),
+      ),
+    ),
+    'field_country_dependent_teritory' => array(
+      'field_name' => 'field_country_dependent_teritory',
+      'cardinality' => 1,
+      'translatable' => 1,
+      'type' => 'text'
+    ),
+    'field_country_date_of_joining' => array(
+      'field_name' => 'field_country_date_of_joining',
+      'cardinality' => 1,
+      'translatable' => 1,
+      'type' => 'datetime',
+      'settings' => array(
+        'repeat' => 0,
+        'todate' => '',
+        'granularity' => array(
+          'year' => 'year',
+          'month' => 'month',
+          'day' => 'day',
+        ),
+        'tz_handling' => 'none',
+        'timezone_db' => ''
+      )
+    ),
+    'field_country_type' => array(
+      'field_name' => 'field_country_type',
+      'cardinality' => 1,
+      'translatable' => 1,
+      'type' => 'taxonomy_term_reference',
+      'settings' => array(
+        'allowed_values' => array(
+          array(
+            'vocabulary' => 'country_type',
+            'parent' => 0,
+          ),
+        ),
+      ),
+    ),
+    'field_country_entry_into_force' => array(
+      'field_name' => 'field_country_entry_into_force',
+      'cardinality' => 1,
+      'translatable' => 1,
+      'type' => 'datetime',
+      'settings' => array(
+        'repeat' => 0,
+        'todate' => '',
+        'granularity' => array(
+          'year' => 'year',
+          'month' => 'month',
+          'day' => 'day',
+        ),
+        'tz_handling' => 'none',
+        'timezone_db' => ''
+      )
+    ),
+    'field_country_entry_note' => array(
+      'field_name' => 'field_country_entry_note',
+      'module' => 'text',
+      'cardinality' => 1,
+      'translatable' => 1,
+      'type' => 'text_long'
+    )
+  );
+
+  $instances = array(
+    'field_country_category' => array(
+      'field_name' => 'field_country_category',
+      'entity_type' => 'node',
+      'bundle' => 'country',
+      'widget' => array(
+        'type' => 'options_select',
+        'weight' => 10
+      ),
+      'label' => t('Country category')
+    ),
+    'field_country_dependent_teritory' => array(
+      'field_name' => 'field_country_dependent_teritory',
+      'entity_type' => 'node',
+      'bundle' => 'country',
+      'widget' => array(
+        'weight' => 11
+      ),
+      'label' => t('Dependent teritory')
+    ),
+    'field_country_date_of_joining' => array(
+      'field_name' => 'field_country_date_of_joining',
+      'entity_type' => 'node',
+      'bundle' => 'country',
+      'widget' => array(
+        'weight' => 12,
+      ),
+      'label' => t('Date of joining')
+    ),
+    'field_country_type' => array(
+      'field_name' => 'field_country_type',
+      'entity_type' => 'node',
+      'bundle' => 'country',
+      'widget' => array(
+        'type' => 'options_select',
+        'weight' => 13
+      ),
+      'label' => t('Type')
+    ),
+    'field_country_entry_into_force' => array(
+      'field_name' => 'field_country_entry_into_force',
+      'entity_type' => 'node',
+      'bundle' => 'country',
+      'widget' => array(
+        'weight' => 14,
+      ),
+      'label' => t('Entry into force')
+    ),
+    'field_country_entry_note' => array(
+      'field_name' => 'field_country_entry_note',
+      'entity_type' => 'node',
+      'bundle' => 'country',
+      'widget' => array(
+        'active' => 1,
+        'module' => 'text',
+        'settings' => array(
+          'rows' => 5,
+        ),
+        'type' => 'text_textarea',
+        'weight' => 15,
+      ),
+      'label' => t('Entry note')
+    )
+  );
+
+  foreach ($fields as $key => $value) {
+    if (field_info_field($key) == NULL) {
+      field_create_field($value);
+      field_create_instance($instances[$key]);
+    }
+  }
+}
+
+/**
+ * Add field 'field_country_country_link'
+ */
+function country_update_7101() {
+  $fields = array(
+	'field_country_country_link' => array(
+		'field_name' => 'field_country_country_link',
+		'module' => 'link',
+		'settings' => array(
+			'attributes' => array(
+				'class' => '',
+				'rel' => '',
+				'target' => 'default',
+			),
+			'display' => array(
+				'url_cutoff' => 80,
+			),
+			'enable_tokens' => 1,
+			'entity_translation_sync' => FALSE,
+			'profile2_private' => FALSE,
+			'title' => 'optional',
+			'title_maxlength' => 128,
+			'title_value' => '',
+			'url' => 0,
+		),
+		'translatable' => 1,
+		'type' => 'link_field',
+	)
+  );
+
+  $instances = array(
+    'field_country_country_link' => array(
+		'bundle' => 'country',
+		'entity_type' => 'node',
+		'field_name' => 'field_country_country_link',
+		'label' => t('Cross-reference between overseas territories and main land'),
+		'required' => 0,
+		'settings' => array(
+			'attributes' => array(
+				'class' => '',
+				'configurable_title' => 0,
+				'rel' => '',
+				'target' => 'default',
+				'title' => '',
+			),
+			'display' => array(
+				'url_cutoff' => 80,
+			),
+			'enable_tokens' => 1,
+			'entity_translation_sync' => FALSE,
+			'rel_remove' => 'default',
+			'title' => 'optional',
+			'title_maxlength' => 128,
+			'title_value' => '',
+			'url' => 0,
+			'user_register_form' => FALSE,
+			'validate_url' => 1,
+		),
+		'widget' => array(
+			'active' => 0,
+			'module' => 'link',
+			'settings' => array(),
+			'type' => 'link_field',
+			'weight' => 16,
+		)
+	)
+  );
+
+  foreach ($fields as $key => $value) {
+    if (field_info_field($key) == NULL) {
+      field_create_field($value);
+      field_create_instance($instances[$key]);
+    }
+  }
+}

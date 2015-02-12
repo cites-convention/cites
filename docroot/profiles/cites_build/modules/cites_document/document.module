@@ -1,0 +1,187 @@
+<?php
+
+/**
+ * Define taxonomy for status and type
+ */
+define('VOC_DOCUMENT_TYPE', 'document_type');
+define('VOC_DOCUMENT_STATUS', 'document_status');
+
+/**
+ * Implements hook_node_info().
+ *
+ * We use hook_node_info() to define our node content type.
+ */
+function document_node_info() {
+	$items = array(
+		'document' => array(
+			'name' => t('Document'),
+			'base' => 'document',
+			'description' => t('Document Content Type.'),
+			'has_title' => '1',
+			'title_label' => t('Title'),
+			'locked' => TRUE,
+		),
+	);
+
+	return $items;
+}
+
+/**
+ * Implements hook_node_type_insert().
+ */
+function document_node_type_insert($content_type) {
+	if ($content_type->type == 'document') {
+		// Add the body field
+		node_add_body_field($content_type);
+
+		// Create all the fields we are adding to our content type.
+		foreach (_document_installed_fields() as $field) {
+			field_create_field($field);
+		}
+
+		// Create all the instances for our fields.
+		foreach (_document_installed_instances() as $instance) {
+			$instance['entity_type'] = 'node';
+			$instance['bundle'] = 'document';
+			field_create_instance($instance);
+		}
+	}
+}
+
+/**
+ * Implement hook_form().
+ */
+function document_form($node, $form_state) {
+	return node_content_form($node, $form_state);
+}
+
+/**
+ * Define the fields for our content type.
+ */
+function _document_installed_fields() {
+	$fields = array();
+
+	$fields['field_document_type'] = array(
+		'field_name' => 'field_document_type',
+		'cardinality' => 1,
+		'type' => 'taxonomy_term_reference',
+		'settings' => array(
+			'allowed_values' => array(
+				0 => array(
+					'vocabulary' => 'document_type',
+					'parent' => '0',
+				),
+			),
+		),
+		'translatable' => 1,
+	);
+
+	$fields['field_document_status'] = array(
+		'field_name' => 'field_document_status',
+		'cardinality' => 1,
+		'type' => 'taxonomy_term_reference',
+		'settings' => array(
+			'allowed_values' => array(
+				0 => array(
+					'vocabulary' => 'document_status',
+					'parent' => '0',
+				),
+			),
+		),
+		'translatable' => 1,
+	);
+
+	$fields['field_document_no'] = array(
+		'field_name' => 'field_document_no',
+		'cardinality' => 1,
+		'type' => 'text',
+		'settings' => array(
+			'max_length' => 255,
+		),
+		'translatable' => 1,
+	);
+
+	$fields['field_document_files'] = array(
+		'field_name' => 'field_document_files',
+		'cardinality' => '-1',
+		'type' => 'file',
+		'settings' => array(
+			'display_default' => 0,
+			'display_field' => 0,
+			'uri_scheme' => 'public',
+		),
+		'translatable' => 1,
+	);
+
+	return $fields;
+}
+
+/**
+ * Define the field instances for our content type.
+ */
+function _document_installed_instances() {
+	$instances = array();
+
+	$instances['field_document_type'] = array(
+		'field_name' => 'field_document_type',
+		'label' => t('Type'),
+		'widget' => array(
+			'type' => 'options_select',
+		),
+	);
+
+	$instances['field_document_status'] = array(
+		'field_name' => 'field_document_status',
+		'label' => t('Status'),
+		'widget' => array(
+			'type' => 'options_select',
+		),
+	);
+
+	$instances['field_document_no'] = array(
+		'field_name' => 'field_document_no',
+		'label' => t('Number / Code'),
+		'widget' => array(
+			'type' => 'text_textfield',
+		),
+	);
+
+	$instances['field_document_files'] = array(
+		'field_name' => 'field_document_files',
+		'label' => 'File',
+		'settings' => array(
+			'description_field' => 1,
+			'file_directory' => 'document',
+			'file_extensions' => 'pdf doc docx odt rtf txt csv xls ods xlsx ppt pptx xml accdb db mdb htm html tiff jpg jpeg gif png raw',
+			'max_filesize' => '50 MB',
+			'user_register_form' => FALSE,
+		),
+		'widget' => array(
+			'active' => 1,
+			'module' => 'file',
+			'settings' => array(
+				'progress_indicator' => 'throbber',
+			),
+			'type' => 'file_generic',
+			'weight' => '1',
+		),
+	);
+
+	return $instances;
+}
+
+class Document extends CitesBase {
+
+	public static $bundle = 'document';
+
+	/**
+	* Create a new Document node instance.
+	*
+	* @param bool $save If TRUE, object is saved into database
+	* @return stdClass The node object initialized
+	*/
+	static function node_create($title, $save = TRUE) {
+		return self::drupal_node_create($title, 'document', $save);
+	}
+
+}

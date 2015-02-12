@@ -1,0 +1,173 @@
+<?php
+
+/**
+ * @file
+ * Provides an interface for managing contextual menus.
+ */
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
+function contextual_menu_form_menu_edit_menu_alter(&$form, &$form_state, $form_id) {
+  $menu_name = $form['old_name']['#value'];
+
+  if (empty($menu_name)) {
+    $contextual_menu['enabled'] = FALSE;
+    $contextual_menu['label']   = NULL;
+  } else {
+    $contextual_menu = db_query('SELECT enabled, label FROM {contextual_menu} WHERE menu_name = :menu_name', array(':menu_name' => $menu_name))->fetchAssoc();
+  }
+
+  $form['contextual_menu'] = array(
+    '#collapsible' => TRUE,
+    '#title'       => t('Contextual menu settings'),
+    '#tree'        => TRUE,
+    '#type'        => 'fieldset'
+  );
+
+  $form['contextual_menu']['enabled'] = array(
+    '#default_value' => $contextual_menu['enabled'],
+    '#title'         => t('Provide a contextual menu'),
+    '#type'          => 'checkbox'
+  );
+
+  $form['contextual_menu']['label'] = array(
+    '#default_value' => $contextual_menu['label'],
+    '#description'   => 'Leave blank to use no label. Useful when working with multiple menus with the same title (e.g., \'Animals Committee\' for a <em>Quick links</em> menu).',
+    '#states'        => array(
+      'visible' => array(
+        'input[name="contextual_menu[enabled]"]' => array(
+          'checked' => TRUE
+        )
+      ),
+    ),
+    '#title' => 'Contextual menu label',
+    '#type'  => 'textfield'
+  );
+}
+
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ *
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
+function contextual_menu_form_node_form_alter(&$form, &$form_state, $form_id) {
+  if (isset($form['contextual_menu'])) {
+    $form['contextual_menu']['#group'] = 'additional_settings';
+    $form['contextual_menu']['#title'] = t('Contextual menu settings');
+    $form['contextual_menu']['#type']  = 'fieldset';
+  }
+}
+
+
+/**
+ * Implements hook_menu_insert().
+ */
+function contextual_menu_menu_insert($menu) {
+  contextual_menu_menu_update($menu);
+}
+
+
+/**
+ * Saves a contextual menu.
+ */
+function contextual_menu_save($menu) {
+  $name = $menu['title'];
+
+  if (!empty($menu['contextual_menu']['label']))
+    $name .= ' (' . $menu['contextual_menu']['label'] . ')';
+
+  $tid = db_query('SELECT tid FROM {contextual_menu} WHERE menu_name = :menu_name', array(':menu_name' => $menu['menu_name']))->fetchField();
+  $vid = variable_get('contextual_menu_vid');
+
+  $term = (object) array(
+    'name' => t($name),
+    'tid'  => $tid ? $tid : NULL,
+    'vid'  => $vid
+  );
+
+  taxonomy_term_save($term);
+
+  if (!context_load($menu['menu_name'])) {
+    ctools_include('export');
+
+    $context = ctools_export_new_object('context');
+
+    $context->condition_mode = 1;
+    $context->conditions     = array(
+      'node_taxonomy' => array(
+        'values' => array(
+          $term->tid => $term->tid
+        )
+      )
+    );
+    $context->name      = $menu['menu_name'];
+    $context->reactions = array(
+      'block' => array(
+        'blocks' => array(
+          'menu-' . $menu['menu_name'] => array(
+            'module' => 'menu',
+            'delta'  => $menu['menu_name'],
+            'region' => 'sidebar_first',
+            'weight' => -10
+          )
+        )
+      )
+    );
+    $context->tag = t('Contextual menu');
+
+    context_save($context);
+  }
+
+  db_merge('contextual_menu')
+    ->key(array('menu_name' => $menu['menu_name']))
+    ->fields(array(
+        'enabled' => $menu['contextual_menu']['enabled'],
+        'label'   => $menu['contextual_menu']['label'],
+        'tid'     => $term->tid
+    ))
+    ->execute();
+}
+
+
+/**
+ * Deletes a contextual menu.
+ */
+function contextual_menu_delete($menu) {
+  $tid = db_query('SELECT tid FROM {contextual_menu} WHERE menu_name = :menu_name', array(':menu_name' => $menu['menu_name']))->fetchField();
+
+  if ($tid)
+    taxonomy_term_delete($tid);
+
+  db_delete('context')
+    ->condition('name', $menu['menu_name'])
+    ->execute();
+
+  context_invalidate_cache();
+
+  db_delete('contextual_menu')
+    ->condition('menu_name', $menu['menu_name'])
+    ->execute();
+}
+
+
+/**
+ * Implements hook_menu_update().
+ */
+function contextual_menu_menu_update($menu) {
+  if ($menu['contextual_menu']['enabled'])
+    contextual_menu_save($menu);
+  else
+    contextual_menu_delete($menu);
+}
+
+
+/**
+ * Implements hook_menu_delete().
+ */
+function contextual_menu_menu_delete($menu) {
+  contextual_menu_delete($menu);
+}

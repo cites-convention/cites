@@ -1,0 +1,818 @@
+<?php
+!function_exists('profiler_v2') ?
+    require_once('libraries/profiler/profiler.inc') : FALSE;
+profiler_v2('cites_build');
+
+/**
+ * Implements hook_install().
+ * Perform actions to set up the site for this profile.
+ */
+function cites_build_install() {
+    /* Theme management */
+    // disable all
+    db_update('system')->fields(array('status' => 0))
+        ->condition('type', 'theme')->execute();
+    // enable $default_theme
+    $default_theme = 'cites_theme';
+    db_update('system')->fields(array('status' => 1))
+        ->condition('type', 'theme')
+        ->condition('name', $default_theme)
+        ->execute();
+    variable_set('theme_default', $default_theme);
+    // enable $admin_theme
+    $admin_theme = 'seven';
+    db_update('system')->fields(array('status' => 1))
+        ->condition('type', 'theme')
+        ->condition('name', $admin_theme)
+        ->execute();
+    variable_set('admin_theme', $admin_theme);
+    // activate admin theme when editing a node
+    variable_set('node_admin_theme', '1');
+
+    // Add text formats.
+    $filtered_html_format = array(
+        'format' => 'filtered_html',
+        'name' => 'Filtered HTML',
+        'weight' => 0,
+        'filters' => array(
+            // URL filter.
+            'filter_url' => array('weight' => 0, 'status' => 1,),
+            // HTML filter.
+            'filter_html' => array('weight' => 1,'status' => 1,),
+            // Line break filter.
+            'filter_autop' => array('weight' => 2,'status' => 1,),
+            // HTML corrector filter.
+            'filter_htmlcorrector' => array('weight' => 10,'status' => 1,),
+        ),
+    );
+    $filtered_html_format = (object) $filtered_html_format;
+    filter_format_save($filtered_html_format);
+
+    $full_html_format = array(
+        'format' => 'full_html', 'name' => 'Full HTML',
+        'weight' => 1, 'filters' => array(
+            // URL filter.
+            'filter_url' => array('weight' => 0, 'status' => 1),
+            // Line break filter.
+            'filter_autop' => array('weight' => 1, 'status' => 1),
+            // HTML corrector filter.
+            'filter_htmlcorrector' => array('weight' => 10, 'status' => 1),
+        ),
+    );
+    $full_html_format = (object) $full_html_format;
+    filter_format_save($full_html_format);
+
+    // Enable some standard blocks.
+    $default_theme = variable_get('theme_default', 'bartik');
+    $admin_theme = 'seven';
+    $blocks = array(
+        array(
+            'module' => 'system', 'delta' => 'main',
+            'region' => 'content',
+            'theme' => $default_theme,
+            'status' => 1, 'weight' => 0, 'pages' => '', 'cache' => -1,
+        ),
+        array(
+            'module' => 'user', 'delta' => 'login',
+            'region' => 'sidebar_first',
+            'theme' => $default_theme,
+            'status' => 1, 'weight' => 0, 'pages' => '', 'cache' => -1,
+        ),
+        array(
+          'module' => 'system', 'delta' => 'navigation',
+          'region' => -1,
+          'theme' => $default_theme,
+          'status' => 0, 'weight' => 0, 'pages' => '', 'cache' => -1,
+        ),
+        array(
+            'module' => 'node', 'delta' => 'recent',
+            'region' => 'dashboard_main',
+            'theme' => $admin_theme,
+            'pages' => '', 'cache' => -1, 'status' => 1, 'weight' => 10,
+        ),
+        array(
+          'module' => 'system', 'delta' => 'help',
+          'region' => 'help',
+          'theme' => $default_theme,
+          'status' => 1, 'weight' => 0, 'pages' => '', 'cache' => -1,
+        ),
+        array(
+          'module' => 'system', 'delta' => 'main',
+          'region' => 'content',
+          'theme' => $admin_theme,
+          'status' => 1, 'weight' => 0, 'pages' => '', 'cache' => -1,
+        ),
+        array(
+          'module' => 'system', 'delta' => 'help',
+          'region' => 'help',
+          'theme' => $admin_theme,
+          'status' => 1, 'weight' => 0, 'pages' => '', 'cache' => -1,
+        ),
+        array(
+          'module' => 'user', 'delta' => 'login',
+          'region' => 'content',
+          'theme' => $admin_theme,
+          'status' => 1, 'weight' => 10, 'pages' => '', 'cache' => -1,
+        ),
+        array(
+          'module' => 'user', 'delta' => 'new',
+          'region' => 'dashboard_sidebar',
+          'theme' => $admin_theme,
+          'status' => 1, 'weight' => 0, 'pages' => '', 'cache' => -1,
+        ),
+        array(
+          'module' => 'search', 'delta' => 'form',
+          'region' => 'dashboard_sidebar',
+          'theme' => $admin_theme,
+          'status' => 1, 'weight' => -10, 'pages' => '', 'cache' => -1,
+        ),
+    );
+    $query = db_insert('block')
+        ->fields(
+            array(
+                'module', 'delta', 'theme', 'status', 'weight',
+                'region', 'pages', 'cache'
+            )
+        );
+    foreach ($blocks as $block) {
+        $query->values($block);
+    }
+    $query->execute();
+
+    // Insert default pre-defined node types into the database. For a complete
+    // list of available node type attributes, refer to the node type API
+    // documentation at: http://api.drupal.org/api/HEAD/function/hook_node_info.
+    $types = array(
+        array(
+            'type' => 'page', 'name' => st('Basic page'),
+            'base' => 'node_content',
+            'description' =>  st("Use <em>basic pages</em> for your static content, such as an 'About us' page."),
+            'custom' => 1,
+            'modified' => 1,
+            'locked' => 0,
+        ),
+        array(
+            'type' => 'article', 'name' => st('Article'),
+            'base' => 'node_content',
+            'description' => st('Use <em>articles</em> for time-sensitive content like news, press releases or blog posts.'),
+            'custom' => 1,
+            'modified' => 1,
+            'locked' => 0,
+        ),
+    );
+
+    foreach ($types as $type) {
+        $type = node_type_set_defaults($type);
+        node_type_save($type);
+        node_add_body_field($type);
+    }
+
+    // Insert default pre-defined RDF mapping into the database.
+    $rdf_mappings = array(
+        array('type' => 'node', 'bundle' => 'page', 'mapping' => array(
+                'rdftype' => array('foaf:Document'),
+            ),
+        ),
+    array(
+        'type' => 'node', 'bundle' => 'article', 'mapping' => array(
+                'field_art_image' => array(
+                    'predicates' => array('og:image', 'rdfs:seeAlso'),
+                    'type' => 'rel',
+                ),
+                'field_tags' => array(
+                    'predicates' => array('dc:subject'),
+                    'type' => 'rel',
+                ),
+            ),
+        ),
+    );
+    foreach ($rdf_mappings as $rdf_mapping) {
+        rdf_mapping_save($rdf_mapping);
+    }
+
+    // Default "Basic page" to not be promoted and have comments disabled.
+    variable_set('node_options_page', array('status'));
+    variable_set('comment_page', COMMENT_NODE_HIDDEN);
+
+    // Hide date and author information for "Basic page" nodes by default.
+    variable_set('node_submitted_page', FALSE);
+
+    // Enable user picture support and set default to a square thumbnail option.
+    variable_set('user_pictures', '1');
+    variable_set('user_picture_dimensions', '1024x1024');
+    variable_set('user_picture_file_size', '800');
+    variable_set('user_picture_style', 'thumbnail');
+
+    // Allow visitor account creation with administrative approval.
+    variable_set('user_register',
+        USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
+
+    // Create a default vocabulary named "Tags",
+    // enabled for the 'article' content type.
+    $description = st('Use tags to group articles on similar topics into categories.');
+    $help = st('Enter a comma-separated list of words to describe your content.');
+    $vocabulary = (object) array(
+        'name' => st('Tags'),
+        'description' => $description,
+        'machine_name' => 'tags',
+        'help' => $help,
+
+    );
+    taxonomy_vocabulary_save($vocabulary);
+
+    $field = array(
+        'field_name' => 'field_' . $vocabulary->machine_name,
+        'type' => 'taxonomy_term_reference',
+        // Set cardinality to unlimited for tagging.
+        'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+        'settings' => array(
+        'allowed_values' => array(
+            array(
+                'vocabulary' => $vocabulary->machine_name,
+                'parent' => 0,
+                ),
+            ),
+        ),
+    );
+    field_create_field($field);
+
+    $instance = array(
+        'field_name' => 'field_' . $vocabulary->machine_name,
+        'entity_type' => 'node',
+        'label' => 'Tags',
+        'bundle' => 'article',
+        'description' => $vocabulary->help,
+        'widget' => array(
+                'type' => 'taxonomy_autocomplete',
+                'weight' => -4,
+            ),
+            'display' => array(
+                'default' => array(
+                'type' => 'taxonomy_term_reference_link',
+                'weight' => 10,
+            ),
+            'teaser' => array(
+                'type' => 'taxonomy_term_reference_link',
+                'weight' => 10,
+            ),
+        ),
+    );
+    field_create_instance($instance);
+
+    // Create an image field "Image", enabled for the 'article' content type.
+    // Many of the following values are default, but shown as an example
+    // See http://api.drupal.org/api/function/field_create_field/7
+
+    $field = array(
+        'field_name' => 'field_art_image',
+        'type' => 'image',
+        'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+        'locked' => FALSE,
+        'indexes' => array('fid' => array('fid')),
+        'settings' => array(
+        'uri_scheme' => 'public',
+            'default_image' => FALSE,
+        ),
+        'storage' => array(
+            'type' => 'field_sql_storage',
+            'settings' => array(),
+        ),
+    );
+    field_create_field($field);
+
+    // See http://api.drupal.org/api/function/field_create_instance/7
+    $instance = array(
+        'field_name' => 'field_art_image',
+        'entity_type' => 'node',
+        'label' => 'Images',
+        'bundle' => 'article',
+        'description' => st('Upload an image to go with this article.'),
+        'required' => FALSE,
+
+        'settings' => array(
+            'file_directory' => 'field/image',
+            'file_extensions' => 'png gif jpg jpeg',
+            'max_filesize' => '',
+            'max_resolution' => '',
+            'min_resolution' => '',
+            'alt_field' => TRUE,
+            'title_field' => '',
+        ),
+        'widget' => array(
+            'type' => 'image_image',
+            'settings' => array(
+                'progress_indicator' => 'throbber',
+                'preview_image_style' => 'thumbnail',
+            ),
+            'weight' => -1,
+        ),
+        'display' => array(
+            'default' => array(
+                'label' => 'hidden',
+                'type' => 'image',
+                'settings' => array(
+                    'image_style' => 'large', 'image_link' => ''
+                ),
+                'weight' => -1,
+            ),
+            'teaser' => array(
+                'label' => 'hidden',
+                'type' => 'image',
+                'settings' => array(
+                    'image_style' => 'medium', 'image_link' => 'content'
+                ),
+                'weight' => -1,
+            ),
+        ),
+    );
+    field_create_instance($instance);
+
+    // Enable default permissions for system roles.
+    $filtered_html_permission = filter_permission_name($filtered_html_format);
+    user_role_grant_permissions(DRUPAL_ANONYMOUS_RID,
+        array('access content', 'access comments', $filtered_html_permission));
+    user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID,
+        array('access content', 'access comments', 'post comments',
+            'skip comment approval', $filtered_html_permission));
+
+    // Create a default role for site administrators, with all permissions
+    $admin_role = new stdClass();
+    $admin_role->name = 'administrator';
+    $admin_role->weight = 2;
+    user_role_save($admin_role);
+    user_role_grant_permissions($admin_role->rid,
+        array_keys(module_invoke_all('permission')));
+    // Set this as the administrator role.
+    variable_set('user_admin_role', $admin_role->rid);
+
+    // Assign user 1 the "administrator" role.
+    db_insert('users_roles')
+        ->fields(array('uid' => 1, 'rid' => $admin_role->rid))
+        ->execute();
+
+    // Create a Home link in the main menu.
+    $item = array(
+        'link_title' => st('Home'),
+        'link_path' => '<front>',
+        'menu_name' => 'main-menu',
+    );
+    menu_link_save($item);
+
+    // Execute the CITES customizations
+    _cites_build_install();
+
+    // Update the menu router information.
+    menu_rebuild();
+    // Rebuild access permissions
+    node_access_rebuild();
+}
+
+
+function _cites_build_install() {
+    /* Enable modules */
+    $modules = array('cites');
+    if(!module_enable($modules)) {
+        drupal_set_message('Failed to enable cites module', 'error');
+    }
+
+    $modules = array('cites_custom_forum');
+    if(!module_enable($modules)) {
+        drupal_set_message('Failed to enable forum module', 'error');
+    }
+
+    $modules = array(
+        'cites_schema_changes',
+        'cites_views',
+        'contextual_menu',
+        'country',
+        'document',
+        'external_news',
+        'password_hustle',
+        'slideshow',
+        'meeting',
+        'institution',
+        'parties_notification'
+    );
+    if(!module_enable($modules)) {
+        drupal_set_message('Failed to enable support modules', 'error');
+    }
+
+    $modules = array('overlay', 'toolbar');
+    module_disable($modules);
+
+    /* Set default country, first day of the month and date format */
+    variable_set('date_first_day', '1');
+    variable_set('site_default_country', 'SZ');
+    variable_set('date_default_timezone', 'Europe/Zurich');
+    variable_set('configurable_timezones', '0');
+    variable_set('user_default_timezone', '0');
+
+    /* */
+    _cites_build_install_languages();
+    _cites_build_install_language_detection();
+    _cites_build_install_article_configure();
+    _cites_build_install_basic_page_configure();
+    _cites_build_install_title();
+    _cites_build_install_entity_translation();
+    _cites_build_install_imce_configure();
+    _cites_build_install_site_map_configure();
+
+    /* Internationalization */
+    variable_set('i18n_node_default_language_none', '1');
+    variable_set('i18n_string_allowed_formats', array(
+        'filtered_html'   => 'filtered_html',
+        'full_html'       => 'full_html',
+        'plain_text'      => 'plain_text',
+        'unfiltered_html' => 'unfiltered_html'
+    ));
+
+    /* On The Web */
+    variable_set('on_the_web_sitename', '1');
+    variable_set('on_the_web_target', '1');
+    variable_set('on_the_web_size', 'sm');
+    variable_set('on_the_web_facebook_page',
+        'https://www.facebook.com/cites');
+    variable_set('on_the_web_flickr_page',
+        'http://www.flickr.com/photos/cites');
+    variable_set('on_the_web_twitter_page',
+        'https://twitter.com/citesconvention');
+    variable_set('on_the_web_youtube_page',
+        'http://www.youtube.com/user/citesvd');
+
+    /* Google Site Search */
+    variable_set('search_default_module', 'gss');
+    variable_set('search_active_modules', array(
+        'gss'  => 'gss',
+        'node' => 0,
+        'user' => 0
+    ));
+    variable_set('gss_api_key', '007303200888603171714:fg5aifirqqo');
+    variable_set('gss_default_language', 1);
+    variable_set('gss_global', 1);
+
+    variable_set('cron_safe_threshold', '0');
+}
+
+
+function _cites_build_install_languages() {
+    $cites_languages = array(
+          array("langcode" => "en", "prefix" => "eng"),
+          array("langcode" => "fr", "prefix" => "fra"),
+          array("langcode" => "es", "prefix" => "esp")
+    );
+    $languages = language_list();
+    foreach ($cites_languages as $index => $language) {
+        $language = _cites_build_install_sanitize_language($language);
+        if (array_key_exists($language['langcode'], $languages)) {
+            $properties = array(
+                'name', 'native', 'direction', 'domain', 'prefix'
+            );
+            $options = array();
+            // Keeps only valid properties defined in the configuration file.
+            foreach (array_keys($cites_languages[$index]) as $key) {
+                if (in_array($key, $properties)) {
+                    $options[$key] = $language[$key];
+                }
+            }
+            if (!empty($options)) {
+                // Returns a new UpdateQuery object for the active database.
+                db_update('languages')
+                    ->fields($options)
+                    ->condition('language', $language['langcode'])
+                    ->execute();
+            }
+            continue;
+        }
+
+        // Predefined language selection.
+        include_once DRUPAL_ROOT . '/includes/iso.inc';
+        $predefined = _locale_get_predefined_list();
+        if (!isset($predefined[$language['langcode']])) {
+            watchdog(WATCHDOG_WARNING, dt('!langcode: Invalid language code',
+                array('!langcode' => $language['langcode']))
+            );
+
+            continue;
+        }
+
+        // Adds the language definition.
+        locale_add_language(
+            $language['langcode'],
+            $language['name'],
+            $language['native'],
+            $language['direction'],
+            $language['domain'],
+            $language['prefix'],
+            $language['enabled'],
+            $language['default']
+        );
+    }
+}
+
+
+function _cites_build_install_language_detection() {
+    // /admin/config/regional/language/configure
+    if(!module_load_include('php', 'locale', 'locale.api')) {
+        throw new Exception('Cannot load locale.api.php');
+    }
+    if(!module_load_include('inc', 'locale', 'locale.admin')) {
+        throw new Exception('Cannot load locale.admin.inc');
+    }
+    $state = array();
+    $state['values']['language']['enabled'] = array(
+        'locale-url' => 1,
+        'locale-user' => 1,
+        'locale-session' => NULL,
+        'locale-browser' => NULL,
+        'language-default' => 1,
+    );
+    $state['values']['language_content']['enabled'] = array(
+        'locale-url' => NULL,
+        'locale-session' => NULL,
+        'locale-user' => NULL,
+        'locale-browser' => NULL,
+        'locale-interface' => 1,
+        'language-default' => 1
+    );
+    drupal_form_submit('locale_languages_configure_form', $state);
+    $errors = form_get_errors();
+    if(!empty($errors)) {
+        var_dump($errors);
+    }
+}
+
+
+function _cites_build_install_title() {
+    if(!module_load_include('inc', 'node', 'content_types')) {
+        throw new Exception('Cannot load content_types.inc');
+    }
+
+    if(!module_load_include('inc', 'title', 'title.admin')) {
+        throw new Exception('Cannot load title.admin.inc');
+    }
+
+    $types = array(
+        'article',
+        'country',
+        'document',
+        'external_news',
+        'meeting',
+        'page',
+        'simplenews',
+        'slide'
+    );
+
+    foreach ($types as $type) {
+        $state = array();
+
+        $state['values']['enabled'] = 1;
+
+        $type = node_type_load($type);
+
+        $state['build_info']['args']    = array('node', &$type, 'title');
+        $state['build_info']['form_id'] = 'title_field_replacement_form';
+        $state['build_info']['files']   = array(
+            'menu' => 'profiles/cites_build/modules/contrib/title/title.admin.inc'
+        );
+
+        drupal_form_submit('title_field_replacement_form', $state);
+
+        $errors = form_get_errors();
+
+        if (!empty($errors)) {
+            foreach ($errors as $error) {
+                $msg = 'Error: %error';
+                $var = array('%error' => $error);
+
+                watchdog('cites.build', $msg, $var, WATCHDOG_ERROR);
+            }
+        }
+    }
+
+    db_change_field('field_data_title_field', 'title_field_value', 'title_field_value', array(
+        'type' => 'varchar',
+        'length' => 768, array()
+        ));
+
+    db_change_field('field_revision_title_field', 'title_field_value', 'title_field_value', array(
+        'type' => 'varchar',
+        'length' => 768, array()
+        ));
+}
+
+
+function _cites_build_install_entity_translation() {
+    // /admin/config/regional/entity_translation
+    if(!module_load_include('inc', 'entity_translation', 'entity_translation.admin'))
+        throw new Exception('module_load_include: entity_translation.admin.inc: No such file or directory');
+
+    $state = array();
+
+    $state['values']['locale_field_language_fallback'] = NULL;
+    $state['values']['entity_translation_settings_node__article']['default_language'] = ENTITY_TRANSLATION_LANGUAGE_DEFAULT;
+    $state['values']['entity_translation_settings_node__page']['default_language']    = ENTITY_TRANSLATION_LANGUAGE_DEFAULT;
+
+    drupal_form_submit('entity_translation_admin_form', $state);
+
+    $errors = form_get_errors();
+
+    if (!empty($errors)) {
+        foreach ($errors as $error) {
+            $msg = 'Error: %error';
+            $var = array('%error' => $error);
+
+            watchdog('cites.build', $msg, $var, WATCHDOG_ERROR);
+        }
+    }
+}
+
+
+function _cites_build_install_article_configure() {
+    // /admin/structure/types/manage/article
+    if(!module_load_include('inc', 'node', 'content_types')) {
+        throw new Exception('Cannot load content_types.inc');
+    }
+
+    $state = array();
+
+    // entity_translation/entity_translation.node.inc
+    $state['values']['language_content_type'] = ENTITY_TRANSLATION_ENABLED;
+    $state['values']['entity_translation_hide_translation_links'] = 1;
+
+    $type = node_type_load('article');
+
+    $state['build_info']['args']    = array(&$type);
+    $state['build_info']['form_id'] = 'node_type_form';
+    $state['build_info']['files']   = array(
+        'menu' => 'modules/node/content_types.inc'
+    );
+
+    drupal_form_submit('node_type_form', $state);
+
+    $errors = form_get_errors();
+
+    if (!empty($errors)) {
+        foreach ($errors as $error) {
+            $msg = 'Error: %error';
+            $var = array('%error' => $error);
+
+            watchdog('cites.build', $msg, $var, WATCHDOG_ERROR);
+        }
+    }
+}
+
+
+function _cites_build_install_basic_page_configure() {
+    // /admin/structure/types/manage/page
+    if(!module_load_include('inc', 'node', 'content_types')) {
+        throw new Exception('Cannot load content_types.inc'); // @todo: Refine
+    }
+    $state = array();
+    // entity_translation/entity_translation.node.inc
+    $state['values']['language_content_type'] = ENTITY_TRANSLATION_ENABLED;
+    $state['values']['entity_translation_hide_translation_links'] = 1;
+
+    $type = node_type_load('page');
+    $state['build_info']['args'] = array(&$type);
+    $state['build_info']['form_id'] = 'node_type_form';
+    $state['build_info']['files'] = array(
+        'menu' => 'modules/node/content_types.inc'
+    );
+    drupal_form_submit('node_type_form', $state);
+    $errors = form_get_errors();
+    if(!empty($errors)) {
+        var_dump($errors);
+    }
+
+    // /admin/structure/types/manage/page/fields/body
+    if(!module_load_include('inc', 'field_ui', 'field_ui.admin')) {
+        throw new Exception('Cannot load field_ui.admin.inc');
+    }
+
+    $state = array();
+    $state['values']['field']['translatable'] = 1;
+
+    $field_instance = field_info_instance('node', 'body', 'page');
+    $state['build_info']['args'] = array(&$field_instance);
+    $state['build_info']['form_id'] = 'field_ui_field_edit_form';
+    $state['build_info']['files'] = array(
+        'menu' => 'modules/field_ui/field_ui.admin.inc'
+    );
+
+    drupal_form_submit('field_ui_field_edit_form', $state);
+    $errors = form_get_errors();
+    if(!empty($errors)) {
+        var_dump($errors);
+    }
+}
+
+
+/**
+ * Sanitizes a language definition.
+ *
+ * @param array $language An associative array describing a language.
+ *
+ * @return array An associative array with the sanitized language.
+ */
+function _cites_build_install_sanitize_language($language) {
+    if (!isset($language['langcode'])) {
+        $language['name'] = NULL;
+    }
+
+    if (!isset($language['name'])) {
+        $language['name'] = NULL;
+    }
+
+    if (!isset($language['native'])) {
+        $language['native'] = NULL;
+    }
+
+    if (!isset($language['direction']) ||
+        $language['direction'] == 'LANGUAGE_LTR') {
+        $language['direction'] = LANGUAGE_LTR;
+    } else {
+        $language['direction'] = LANGUAGE_RTL;
+    }
+
+    if (!isset($language['domain'])) {
+        $language['domain'] = '';
+    }
+
+    if (!isset($language['prefix'])) {
+        $language['prefix'] = '';
+    }
+
+    if (!isset($language['enabled'])) {
+        $language['enabled'] = TRUE;
+    }
+
+    if (!isset($language['default'])) {
+        $language['default'] = FALSE;
+    }
+
+    return $language;
+}
+
+/**
+ * Alter User-1 profile and assign User-1 profile to the administrator role.
+ */
+function _cites_build_install_imce_configure(){
+    // /admin/config/media/imce
+    if(!module_load_include('inc', 'imce', 'inc/imce.admin')) {
+        throw new Exception('Cannot load inc/imce.admin.inc');
+    }
+
+    // alter profile User-1
+    $profiles = variable_get('imce_profiles', array());
+
+    if (isset($profiles[1])) {
+        $profiles[1]['directories'][0]['name'] = "sites/default/files";
+        variable_set('imce_profiles', $profiles);
+    } else {
+        throw new Exception('Cannot load IMCE profile User-1.');
+    }
+
+    $roles = user_roles();
+
+    if (in_array("administrator", $roles)) {
+        // role administrator found - assign User-1 profile to administrator
+        $roles_profiles = variable_get('imce_roles_profiles', array());
+        $admin_role = user_role_load_by_name("administrator");
+
+        $roles_profiles[$admin_role->rid]['public_pid'] = 1;
+        $roles_profiles[$admin_role->rid]['private_pid'] = 1;
+        $roles_profiles[$admin_role->rid]['weight'] = 0;
+
+        variable_set('imce_roles_profiles', $roles_profiles);
+    } else {
+        // role administrator not found
+        throw new Exception('Cannot assign IMCE profile User-1 to administrator - role administrator not found.');
+    }
+}
+
+/**
+ * Set variables for site map module and add permission to view sitemap for anonymous user
+ */
+function _cites_build_install_site_map_configure() {
+    variable_set('site_map_categories_depth', 'all');
+    variable_set('site_map_css',0);
+    variable_set('site_map_forum_threshold','-1');
+    variable_set('site_map_message', array(
+      'value' => '',
+      'format' => 'filtered_html'
+    ));
+    variable_set('site_map_page_title','Site map');
+    variable_set('site_map_rss_depth','all');
+    variable_set('site_map_rss_front','sitemap.xml');
+    variable_set('site_map_show_count',0);
+    variable_set('site_map_show_front',0);
+    variable_set('site_map_show_menus',array(
+      'main-menu' => 'main-menu'
+    ));
+    variable_set('site_map_show_rss_links','0');
+    variable_set('site_map_show_vocabularies',array());
+    variable_set('site_map_term_threshold',0);
+
+    user_role_change_permissions(DRUPAL_ANONYMOUS_RID,
+        array('access site map' => TRUE));
+}

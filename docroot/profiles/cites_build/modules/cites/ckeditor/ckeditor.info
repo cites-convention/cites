@@ -1,0 +1,20 @@
+name        = CKEditor
+description = "Enables CKEditor (WYSIWYG HTML editor) for use instead of plain text fields."
+core        = 7.x
+package     = CITES
+configure   = admin/config/content/ckeditor
+
+dependencies[] = imce
+
+; Information added by drupal.org packaging script on 2013-04-12
+version = "7.x-1.13"
+core = "7.x"
+project = "ckeditor"
+datestamp = "1365759619"
+
+; Information added by fserver
+core = "7.x"
+datestamp = "1400595690"
+project = "cites"
+project status url = "http://fserver.eaudeweb.ro/fserver"
+version = "7.x-1.6"

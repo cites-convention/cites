@@ -1,0 +1,16 @@
+name = CITES document module
+description = Provides support for the document content type
+package = CITES
+
+dependencies[] = locale
+dependencies[] = file
+dependencies[] = taxonomy
+
+files[] = document.test
+
+; Information added by fserver
+core = "7.x"
+datestamp = "1378122818"
+project = "cites_document"
+project status url = "http://fserver.eaudeweb.ro/fserver"
+version = "7.x-1.1"

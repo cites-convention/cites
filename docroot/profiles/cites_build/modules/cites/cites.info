@@ -1,0 +1,64 @@
+name = CITES support modules
+description = Contains support modules and 3rd party customized modules
+core = 7.x
+package = CITES
+project status url = http://fserver.eaudeweb.ro/fserver
+
+; Theme dependencies
+dependencies[] = nice_menus
+dependencies[] = front_page
+dependencies[] = title
+;dependencies[] = l10n_update
+dependencies[] = on_the_web
+
+; Core dependencies
+dependencies[] = block
+dependencies[] = color
+dependencies[] = comment
+dependencies[] = contextual
+dependencies[] = dashboard
+dependencies[] = dblog
+dependencies[] = features
+dependencies[] = field_ui
+dependencies[] = date
+dependencies[] = file
+dependencies[] = help
+dependencies[] = image
+dependencies[] = list
+dependencies[] = menu
+dependencies[] = number
+dependencies[] = options
+dependencies[] = path
+dependencies[] = rdf
+dependencies[] = search
+dependencies[] = shortcut
+dependencies[] = taxonomy
+
+; I18N dependencies
+dependencies[] = entity_translation
+dependencies[] = i18n
+dependencies[] = i18n_block
+dependencies[] = i18n_field
+dependencies[] = i18n_menu
+
+; Generic dependencies - used by other components
+dependencies[] = taxonomy_access_fix
+dependencies[] = profile2
+; dependencies[] = ckeditor
+dependencies[] = googleanalytics
+dependencies[] = gss
+dependencies[] = variable
+dependencies[] = simpletest
+dependencies[] = simplenews
+dependencies[] = site_map
+dependencies[] = privatemsg
+
+files[] = cites.test
+
+
+; Information added by fserver
+core = "7.x"
+datestamp = "1400595690"
+project = "cites"
+project status url = "http://fserver.eaudeweb.ro/fserver"
+version = "7.x-1.6"

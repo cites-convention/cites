@@ -1,0 +1,93 @@
+/* Basic Layout Styles */
+
+html,
+body,
+#page  {
+  height: 100%;
+}
+
+#page-wrapper {
+  min-height: 100%;
+  min-width: 986px;
+}
+
+#header div.section,
+#featured div.section,
+#messages div.section,
+#main,
+#footer {
+  margin-left: auto;
+  margin-right: auto;
+  width: 986px;
+}
+
+#banner {
+  height: 99px;
+  position: relative;
+}
+
+#language-switcher {
+  position: absolute;
+  right: 0; /* LTR */
+  top: 0;
+}
+
+.region-header {
+  float: right; /* LTR */
+  margin: 3em 5px 0;
+}
+
+#main-menu {
+  height: 35px;
+  position: relative;
+}
+
+#content,
+#sidebar-first,
+#sidebar-second {
+  display: inline;
+  float: left; /* LTR */
+  position: relative;
+}
+
+.one-sidebar.sidebar-first #content {
+  width: 79%;
+}
+
+.one-sidebar.sidebar-second #content {
+  width: 729px;
+}
+
+.two-sidebars #content {
+  width: 54%;
+}
+
+.no-sidebars #content {
+  width: 986px;
+}
+
+#sidebar-first {
+  width: 20%;
+}
+
+#sidebar-second {
+  width: 25%;
+}
+
+#sidebar-second .section {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+#content .section,
+.sidebar .section {
+  padding: 0 15px;
+}
+
+#breadcrumb {
+  padding: 0 15px;
+}
+
+#footer {
+  width: 986px;
+}

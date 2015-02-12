@@ -1,0 +1,165 @@
+<?php
+
+/**
+ * @file
+ * Simpletest case for country module.
+ *
+ * Verify country module functionality.
+ */
+
+/**
+ * Functionality tests for country module.
+ */
+class CountryTestCase extends DrupalWebTestCase {
+
+  protected static $bundle;
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Country Content Type',
+      'description' => 'Verify country module functionality.',
+      'group' => 'CITES',
+    );
+  }
+
+  function setUp() {
+    //Set installation profile
+    $this->profile = 'cites_build';
+    //Enable the module.
+	parent::setUp('country');
+    self::$bundle = Country::$bundle;
+  }
+
+  /**
+   * API-level content type test.
+   *
+   * This test will verify that when the module is installed, it:
+   *   - Adds a new content type, country.
+   *   - Attaches all defined fields.
+   */
+  function test_installation_api() {
+    // At this point, the module should be installed.
+    // First check for our content type and then for it s attached fields.
+    $node_type = node_type_get_type('country');
+    $this->assertTrue($node_type, 'Country Type was created.', 'API');
+
+    $fields = _country_installed_instances();
+    foreach (array_keys($fields) as $field_name) {
+      $field = field_info_instance('node', $field_name, 'country');
+      $this->assertTrue($field, 'Field: ' . $field_name . ' was attached to country.', 'API');
+    }
+  }
+
+  /**
+   * Verify the functionality of the country module.
+   */
+  function test_node_create_post() {
+    // Create and login user.
+    $account = $this->drupalCreateUser(array('access content', 'create country content'));
+    $this->drupalLogin($account);
+
+    $language = 'und';
+    // Create a new node.
+    $edit = array(
+      "title_field[$language][0][value]" => $this->randomName(),
+      "field_country_official_name[$language][0][value]" => 'Romania',
+      "field_country_iso2[$language][0][value]" => 'ro',
+      "field_country_iso3[$language][0][value]" => 'rou',
+    );
+    $this->drupalPost('node/add/country', $edit, t('Save'));
+    $this->assertText("Country Type " . $edit["title_field[$language][0][value]"] . " has been created", "Found node creation message");
+  }
+
+  	function test_node_create() {
+    	$node = Country::node_create('Albania', 'AL', 'ALB', 'Republic of Albania');
+        $node = node_load($node->nid);
+        $this->assertEqual('Albania', $node->title);
+        $this->assertEqual('AL', CitesBase::get_field_single_value($node, 'field_country_iso2'));
+        $this->assertEqual('ALB', CitesBase::get_field_single_value($node, 'field_country_iso3'));
+        $this->assertEqual('Republic of Albania', CitesBase::get_field_single_value($node, 'field_country_official_name'));
+	}
+
+    function test_get_by_iso2() {
+        $node = Country::node_create('Albania', 'AL', 'ALB', 'Republic of Albania');
+
+        $albania = node_load($node->nid);
+        $this->assertNotNull($albania);
+        $this->assertEqual($node->nid, $albania->nid);
+        $this->assertEqual('Albania', $albania->title);
+
+        $country = Country::get_by_iso2('al');
+        $this->assertNotNull($country);
+        $this->assertEqual($albania->nid, $country->nid);
+    }
+
+    function test_list_keyed_by_name() {
+        $country_1 = Country::node_create('Albania', 'AL', 'ALB', 'Republic of Albania');
+        $country_2 = Country::node_create('Romania', 'RO', 'ROU', 'Romania');
+
+        $countries = Country::list_keyed_by_name();
+        $this->assertEqual(9, count(array_keys($countries)));
+        $this->assertTrue(array_key_exists('Albania', $countries));
+        $this->assertTrue(array_key_exists('ALBANIA', $countries));
+        $this->assertTrue(array_key_exists('albania', $countries));
+        $this->assertTrue(array_key_exists('Romania', $countries));
+        $this->assertTrue(array_key_exists('ROMANIA', $countries));
+        $this->assertTrue(array_key_exists('romania', $countries));
+
+        $alb = $countries['albania'];
+        $rou = $countries['romania'];
+        $this->assertEqual($country_1->nid, $alb->nid);
+        $this->assertEqual($country_2->nid, $rou->nid);
+    }
+
+    function test_list_keyed_by_iso2() {
+        $country_1 = Country::node_create('Albania', 'Al', 'Alb', 'Republic of Albania');
+        $country_2 = Country::node_create('Romania', 'Ro', 'Rou', 'Romania');
+
+        $countries = Country::list_keyed_by_iso2();
+
+        $this->assertEqual(6, count(array_keys($countries)));
+        $this->assertTrue(array_key_exists('AL', $countries));
+        $this->assertTrue(array_key_exists('al', $countries));
+        $this->assertTrue(array_key_exists('RO', $countries));
+        $this->assertTrue(array_key_exists('ro', $countries));
+
+        $alb = $countries['al'];
+        $rou = $countries['ro'];
+        $this->assertEqual($country_1->nid, $alb->nid);
+        $this->assertEqual($country_2->nid, $rou->nid);
+    }
+
+    function test_get_by_name() {
+        $alb = Country::node_create('Albania', 'Al', 'Alb', 'Republic of Albania');
+        $obj = Country::get_by_name('albania');
+        $this->assertEqual($alb->nid, $obj->nid);
+
+        $obj = Country::get_by_name('ALBANIA');
+        $this->assertEqual($alb->nid, $obj->nid);
+
+        $obj = Country::get_by_name('AlBaNiA');
+        $this->assertEqual($alb->nid, $obj->nid);
+    }
+
+    function test_cache() {
+        Country::node_create('Romania', 'RO');
+        $all = Country::get_all_objects();
+        $this->assertEqual(1, count($all));
+
+        Country::node_create('Bulgaria', 'BG');
+        $all = Country::get_all_objects();
+        $this->assertEqual(2, count($all));
+
+        $this->assertNotNull(Country::get_by_iso2('BG'));
+        $this->assertNotNull(Country::get_by_name('Bulgaria'));
+    }
+
+    function test_get_all_objects() {
+        $countries = Country::get_all_objects();
+        $this->assertEqual(0, count($countries));
+
+        Country::node_create('Deutschland', 'DE');
+        $countries = Country::get_all_objects();
+        $this->assertEqual(1, count($countries));
+    }
+}

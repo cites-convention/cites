@@ -1,0 +1,726 @@
+<?php
+
+/**
+ * Implements hook_form_user_register_form_alter().
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
+function cites_custom_forum_form_user_register_form_alter(&$form, &$form_state) {
+  $form['account']['firstname'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => t('Firstname'),
+    '#weight' => 2
+  );
+
+  $form['account']['lastname'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => t('Lastname'),
+    '#weight' => 3
+  );
+
+  $form['account']['organization'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Organization'),
+    '#weight' => 4
+  );
+
+  $form['account']['telephone'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Telephone'),
+    '#weight' => 5
+  );
+
+  $form['account']['reason'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Reason'),
+    '#weight' => 7
+  );
+/*
+  $query = db_select('node', 'n');
+  $query->condition('n.type', 'country', '=')
+      ->fields('n', array('title'));
+  $result = $query->execute()->fetchAll();
+  $countries = array();
+  foreach ($result as $record) {
+    $countries[$record->title] = $record->title;
+  }
+
+  $form['account']['country'] = array(
+    '#type' => 'select',
+    '#title' => t('Country'),
+    '#options' => $countries,
+    '#weight' => 6
+  );
+*/
+  $form['account']['roles']['#access'] = TRUE;
+  $form['account']['roles']['#weight'] = 8;
+  $form['account']['name']['#weight'] = 0;
+  $form['account']['mail']['#weight'] = 1;
+  $form['account']['status']['#weight'] = 10;
+  $form['account']['notify']['#weight'] = 9;
+
+  // unset User Registration Pending Role
+  $user_registration_pending_role = user_role_load_by_name("User Registration Pending");
+  if ($user_registration_pending_role) {
+    unset($form['account']['roles']['#options'][$user_registration_pending_role->rid]);
+  }
+
+  $forum_roles = array();
+  foreach ($form['account']['roles']['#options'] as $role_rid => $role) {
+    /*
+    if (preg_match("/ Manager$/", $role) == 1) {
+      $form['account']['roles']['#options'] = array_diff($form['account']['roles']['#options'], array($role));
+      $forum_name = preg_replace("/ Manager$/", "", $role);
+      $field_name = "Forum Role " . md5($forum_name);
+      $forum_roles[$field_name]['#options'][$role_rid] = "Manager";
+      $forum_roles[$field_name]['forumName'] = $forum_name;
+    }
+    */
+
+    if (preg_match("/ Member$/", $role) == 1) {
+      $form['account']['roles']['#options'] = array_diff($form['account']['roles']['#options'], array($role));
+      $forum_name = preg_replace("/ Member$/", "", $role);
+      $field_name = "Forum Role " . md5($forum_name);
+      $forum_roles[$field_name]['#options'][$role_rid] = "Member";
+      $forum_roles[$field_name]['forumName'] = $forum_name;
+    }
+
+    if (preg_match("/ Visitor$/", $role) == 1) {
+      $form['account']['roles']['#options'] = array_diff($form['account']['roles']['#options'], array($role));
+      $forum_name = preg_replace("/ Visitor$/", "", $role);
+      $field_name = "Forum Role " . md5($forum_name);
+      $forum_roles[$field_name]['#options'][$role_rid] = "Visitor";
+      $forum_roles[$field_name]['forumName'] = $forum_name;
+    }
+  }
+
+  $form['account']['forum_roles'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => 'Forum Roles',
+    '#weight' => 20,
+    '#access' => TRUE,
+    '#description' => 'Manager - read,create,update posts,manage forum visitors and members<br />
+                       Member - read,create posts<br />
+                       Visitor - read posts<br />'
+  );
+
+  foreach ($forum_roles as $key => $forum) {
+    if (count($forum['#options']) != 2) {
+      continue;
+    }
+    $forum['#options'][1] = 'None';
+    $form['account']['forum_roles'][$key] = array(
+      '#type' => 'select',
+      '#required' => FALSE,
+      '#title' => t($forum['forumName'] . " Forum"),
+      '#options' => $forum['#options'],
+      '#weight' => 20,
+      '#access' => TRUE,
+      '#multiple' => FALSE,
+      '#default_value' => array(1));
+  }
+
+  $form['#submit'] = array('cites_custom_forum_user_register_submit');
+}
+
+/**
+ * Implements hook_user_register_submit().
+ */
+function cites_custom_forum_user_register_submit(&$form, &$form_state) {
+  global $user;
+  $is_admin = in_array("administrator", $user->roles);
+
+  // set User Registration Pending Role for new users
+  $new_roles = array();
+  $user_registration_pending_role = user_role_load_by_name("User Registration Pending");
+
+  if ($user_registration_pending_role && !$is_admin) {
+    $form_state['values']['roles'][$user_registration_pending_role->rid] = $user_registration_pending_role->rid;
+  }
+
+  foreach ($form_state['input'] as $key => $value) {
+    if (preg_match("/^Forum_Role_/", $key) == 1 && !$is_admin) {
+      unset($form_state['input'][$key]);
+      $roleObj = user_role_load($value);
+      if ($roleObj != FALSE) {
+        $new_roles[] = $roleObj->name;
+      }
+    }
+    elseif (preg_match("/^Forum_Role_/", $key) == 1) {
+      $form_state['values']['roles'][$value] = $value;
+    }
+  }
+
+  $admin = $form_state['values']['administer_users'];
+
+  if (!variable_get('user_email_verification', TRUE) || $admin) {
+    $pass = $form_state['values']['pass'];
+  }
+  else {
+    $pass = user_password();
+  }
+  $notify = !empty($form_state['values']['notify']);
+
+// Remove unneeded values.
+  form_state_values_clean($form_state);
+
+  $form_state['values']['pass'] = $pass;
+  $form_state['values']['init'] = $form_state['values']['mail'];
+  $account = $form['#user'];
+
+  entity_form_submit_build_entity('user', $account, $form, $form_state);
+
+// Populate $edit with the properties of $account, which have been edited on
+// this form by taking over all values, which appear in the form values too.
+  $edit = array_intersect_key((array) $account, $form_state['values']);
+
+  $account = user_save($account, $edit);
+
+// Terminate if an error occurred during user_save().
+  if (!$account) {
+    drupal_set_message(t("Error saving user account."), 'error');
+    $form_state['redirect'] = '';
+    return;
+  }
+
+// complete reason column
+  db_update('users')->fields(array(
+        'reason' => $form_state['values']['reason']
+      ))
+      ->condition("uid", $account->uid, '=')
+      ->execute();
+
+// Complete profile2 extended profile with values from form
+  $profile = profile2_create(array('user' => $account, 'type' => 'extendedprofile'));
+  $profile->firstname[LANGUAGE_NONE][0]['value'] = $form_state['values']['firstname'];
+  $profile->lastname[LANGUAGE_NONE][0]['value'] = $form_state['values']['lastname'];
+  $profile->organization[LANGUAGE_NONE][0]['value'] = $form_state['values']['organization'];
+  $profile->telephone[LANGUAGE_NONE][0]['value'] = $form_state['values']['telephone'];
+ // $countryObj = Country::get_by_name($form_state['values']['country']);
+ // $profile->country[LANGUAGE_NONE][0]['target_id'] = $countryObj->nid;
+  profile2_save($profile);
+
+  $form_state['user'] = $account;
+  $form_state['values']['uid'] = $account->uid;
+
+  watchdog('user', 'New user: %name (%email).', array('%name' => $form_state['values']['name'], '%email' => $form_state['values']['mail']), WATCHDOG_NOTICE, l(t('edit'), 'user/' . $account->uid . '/edit'));
+
+// Add plain text password into user account to generate mail tokens.
+  $account->password = $pass;
+
+// New administrative account without notification.
+  $uri = entity_uri('user', $account);
+  if ($admin && !$notify) {
+    drupal_set_message(t('Created a new user account for <a href="@url">%name</a>. No e-mail has been sent.', array('@url' => url($uri['path'], $uri['options']), '%name' => $account->name)));
+  }
+// No e-mail verification required; log in user immediately.
+  elseif (!$admin && !variable_get('user_email_verification', TRUE) && $account->status) {
+    _user_mail_notify('register_no_approval_required', $account);
+    $form_state['uid'] = $account->uid;
+    user_login_submit(array(), $form_state);
+    drupal_set_message(t('Registration successful. You are now logged in.'));
+    $form_state['redirect'] = '';
+  }
+// No administrator approval required.
+  elseif ($account->status || $notify) {
+    $op = $notify ? 'register_admin_created' : 'register_no_approval_required';
+    _user_mail_notify($op, $account);
+    if ($notify) {
+      drupal_set_message(t('A welcome message with further instructions has been e-mailed to the new user <a href="@url">%name</a>.', array('@url' => url($uri['path'], $uri['options']), '%name' => $account->name)));
+    }
+    else {
+      drupal_set_message(t('A welcome message with further instructions has been sent to your e-mail address.'));
+      $form_state['redirect'] = '';
+    }
+  }
+// Administrator approval required.
+  else {
+    _user_mail_notify('register_pending_approval', $account);
+    drupal_set_message(t('Thank you for applying for an account. Your account is currently pending approval by the site administrator.<br />In the meantime, a welcome message with further instructions has been sent to your e-mail address.'));
+    $form_state['redirect'] = '';
+  }
+  if (!empty($new_roles)) {
+    _cites_custom_forum_send_mail_to_forum_managers($new_roles, $form_state['input']['name']);
+  }
+}
+
+/**
+ * Implements hook_form_user_profile_form_alter().
+ */
+function cites_custom_forum_form_user_profile_form_alter(&$form, &$form_state) {
+  if (!isset($form['account']['roles']['#options'])) {
+    return;
+  }
+
+  global $user;
+  $edit_own_profile = $form['#user']->uid == $user->uid;
+  $is_admin = in_array("administrator", $user->roles);
+  $not_own_profile_not_administrator = !$edit_own_profile && !$is_admin;
+  $form['account']['name']['#access'] = $edit_own_profile;
+  $form['account']['mail']['#disabled'] = !$edit_own_profile;
+  $form['account']['pass']['#access'] = $edit_own_profile;
+  $form['account']['status']['#access'] = $is_admin;
+  $form['picture']['#access'] = $edit_own_profile;
+  $form['signature_settings']['#access'] = false;
+
+  $forum_roles = array();
+  foreach ($form['account']['roles']['#options'] as $role_rid => $role) {
+    if (preg_match("/ Manager$/", $role) == 1) {
+      $form['account']['roles']['#options'] = array_diff($form['account']['roles']['#options'], array($role));
+      $forum_name = preg_replace("/ Manager$/", "", $role);
+      $field_name = "Forum Role " . md5($forum_name);
+      $forum_roles[$field_name]['#options'][$role_rid] = "Manager";
+      $forum_roles[$field_name]['forumName'] = $forum_name;
+    }
+
+    if (preg_match("/ Member$/", $role) == 1) {
+      $form['account']['roles']['#options'] = array_diff($form['account']['roles']['#options'], array($role));
+      $forum_name = preg_replace("/ Member$/", "", $role);
+      $field_name = "Forum Role " . md5($forum_name);
+      $forum_roles[$field_name]['#options'][$role_rid] = "Member";
+      $forum_roles[$field_name]['forumName'] = $forum_name;
+    }
+
+    if (preg_match("/ Visitor$/", $role) == 1) {
+      $form['account']['roles']['#options'] = array_diff($form['account']['roles']['#options'], array($role));
+      $forum_name = preg_replace("/ Visitor$/", "", $role);
+      $field_name = "Forum Role " . md5($forum_name);
+      $forum_roles[$field_name]['#options'][$role_rid] = "Visitor";
+      $forum_roles[$field_name]['forumName'] = $forum_name;
+    }
+  }
+
+  $form['account']['forum_roles'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => 'Forum Roles',
+    '#weight' => 20,
+    '#description' => 'Manager - read,create,update posts, manage forum visitors and members<br />
+                       Member - read,create posts<br />
+                       Visitor - read posts<br />'
+  );
+
+  foreach ($forum_roles as $key => $forum) {
+    $short_forum_name = preg_replace('/[^a-zA-Z0-9]|(amp)/', '', $forum['forumName']);
+    $can_edit = user_access("edit users with role $short_forum_name" . "Member", $user);
+    if (count($forum['#options']) != 3) {
+      continue;
+    }
+
+    $form['account']['forum_roles'][$key] = array(
+      '#type' => 'select',
+      '#title' => t($forum['forumName'] . " Forum"),
+      '#options' => $forum['#options'],
+      '#weight' => 20,
+      '#access' => $can_edit || $edit_own_profile,
+      '#default_value' => 0,
+      '#multiple' => FALSE,
+    );
+
+    $default_value = 0;
+    foreach (array_keys($forum['#options']) as $forum_option_key) {
+      if (isset($form_state['user']->roles[$forum_option_key])) {
+        $form['account']['forum_roles'][$key]['#default_value'] = $forum_option_key;
+        $default_value = $forum_option_key;
+        if ($is_admin || $not_own_profile_not_administrator) {
+          unset($form_state['user']->roles[$forum_option_key]);
+        }
+        if (!in_array('administrator', $user->roles)) {
+          $form['account']['forum_roles'][$key]['#disabled'] = !$can_edit && $edit_own_profile;
+        }
+        break;
+      }
+    }
+
+    if ($default_value == 0) {
+      $form['account']['forum_roles'][$key]['#options'][0] = 'None';
+    }
+    else {
+      $form['account']['forum_roles'][$key]['#options'][-$default_value] = 'None';
+    }
+  }
+
+  $result = db_select('users', 'u')
+      ->condition('uid', $form['#user']->uid, '=')
+      ->fields('u', array('reason'))
+      ->execute()
+      ->fetchAll();
+  $reason_obj = reset($result);
+
+  $form['account']['reason'] = array(
+    '#type' => 'textarea',
+    '#disabled' => TRUE,
+    '#default_value' => $reason_obj->reason,
+    '#title' => t('Reason'),
+    '#access' => !$not_own_profile_not_administrator
+  );
+  $form['#submit'] = array('cites_custom_forum_user_profile_submit');
+}
+
+/**
+ * Implements hook_user_profile_submit().
+ */
+function cites_custom_forum_user_profile_submit(&$form, &$form_state) {
+  global $user;
+  $is_admin = in_array('administrator', $user->roles);
+  $edit_own_profile = $form['#user']->uid == $user->uid;
+  $is_forum_manager = !$is_admin && !$edit_own_profile;
+
+  foreach ($form_state['input'] as $key => $value) {
+    $matching = preg_match("/^Forum_Role_/", $key);
+    if ($matching == 1 && $value > 0) {
+      $form_state['values']['roles'][$value] = $value;
+      $old_key = str_replace("_", " ", $key);
+      $old_value = $form_state['values'][$old_key];
+      if ($old_value != $value && ($is_admin || $is_forum_manager)) {
+        unset($form_state['values']['roles'][$old_value]);
+      }
+    }
+    else if ($matching == 1 && $value < 0) {
+      unset($form_state['values']['roles'][-$value]);
+    }
+  }
+  $message = array();
+  $new_roles = array();
+  foreach ($form_state['values']['roles'] as $key => $value) {
+    $role = user_role_load($key);
+    if (!isset($form['#user']->roles[$key]) && $value && !$is_admin && !$is_forum_manager) {
+      unset($form_state['values']['roles'][$key]);
+      $new_roles[] = $role->name;
+      $message[] = 'User ' . $form['#user']->name . ' wants to become ' . $role->name;
+    }
+  }
+
+  if (!empty($message)) {
+    $site_email = variable_get('site_mail', 'admin@example.com');
+    watchdog('cites_custom_forum', "Forum Applications: " . implode("<br />", $message));
+    drupal_mail('cites_custom_forum', 'cites_custom_forum', $site_email, LANGUAGE_NONE, array(
+      'to' => $site_email,
+      'subject' => 'CITES: New Forum Roles Request',
+      'body' => implode(PHP_EOL, $message)
+        ), NULL, TRUE);
+    _cites_custom_forum_send_mail_to_forum_managers($new_roles, $form['#user']->name);
+    drupal_set_message("Your new configuration is pending.It should be approved by an administrator");
+  }
+
+  if ($form_state['values']['status'] == 1 && $is_admin) {
+    $role = user_role_load_by_name('User Registration Pending');
+    if ($role) {
+      unset($form_state['values']['roles'][$role->rid]);
+    }
+  }
+
+  user_profile_form_submit($form, $form_state);
+  watchdog('cites_custom_forum', $user->name . ' edited profile of ' . $form['#user']->name);
+}
+
+/**
+ * Implements hook_form_taxonomy_form_term_alter().
+ */
+function cites_custom_forum_form_taxonomy_form_term_alter(&$form, $form_state) {
+  if ($form['#vocabulary']->machine_name == 'forums') {
+    $form['#previous_value'] = $form_state['term']->name;
+    $form['#submit'] = array('cites_custom_forum_form_taxonomy_form_term_submit');
+  }
+}
+
+/**
+ * Implements hook_form_taxonomy_form_term_submit().
+ */
+function cites_custom_forum_form_taxonomy_form_term_submit($form, &$form_state) {
+  // Set delete TRUE in order to avoid confirmation page
+  $form_state['values']['delete'] = TRUE;
+  taxonomy_form_term_submit($form, $form_state);
+
+  if ($form_state['input']['op'] == 'Save') {
+    cites_custom_forum_form_taxonomy_form_term_save($form, $form_state);
+  }
+  elseif ($form_state['input']['op'] == 'Delete') {
+    cites_custom_forum_form_taxonomy_form_term_delete($form, $form_state);
+  }
+}
+
+/**
+ * Implements hook_form_term_save().
+ */
+function cites_custom_forum_form_taxonomy_form_term_save($form, &$form_state) {
+  if ($form['#previous_value'] != "" && $form['#previous_value'] != $form_state['values']['name']) {
+    $manager_role = $form['#previous_value'] . ' Manager';
+    $member_role = $form['#previous_value'] . ' Member';
+    $visitor_role = $form['#previous_value'] . ' Visitor';
+    user_role_delete($manager_role);
+    user_role_delete($member_role);
+    user_role_delete($visitor_role);
+  }
+
+  $forum_name = $form_state['values']['name'];
+  $manager_role = $forum_name . ' Manager';
+  $member_role = $forum_name . ' Member';
+  $visitor_role = $forum_name . ' Visitor';
+  $tid = $form_state['values']['tid'];
+
+  if (!user_role_load_by_name($member_role)) {
+    user_role_save((object) array('name' => $member_role));
+    $role_obj = user_role_load_by_name($member_role);
+    $member_permissions = array(
+      'create forum content' => TRUE
+    );
+    user_role_change_permissions($role_obj->rid, $member_permissions);
+    _cites_custom_forum_grant_permissions($tid, $role_obj->rid, 1, 0, 0, 1);
+  }
+
+  if (!user_role_load_by_name($visitor_role)) {
+    user_role_save((object) array('name' => $visitor_role));
+    $role_obj = user_role_load_by_name($visitor_role);
+    _cites_custom_forum_grant_permissions($tid, $role_obj->rid, 1, 0, 0, 0);
+  }
+
+  if (!user_role_load_by_name($manager_role)) {
+    user_role_save((object) array('name' => $manager_role));
+    $role_obj = user_role_load_by_name($manager_role);
+    $member_role_short_name = preg_replace('/[^a-zA-Z0-9]/', '', $member_role);
+    $visitor_role_short_name = preg_replace('/[^a-zA-Z0-9]/', '', $visitor_role);
+    $manager_permissions = array(
+      'administer users' => TRUE,
+      'access administration pages' => TRUE,
+      'access administration menu' => TRUE,
+      'create forum content' => TRUE,
+      'edit users with no custom roles' => TRUE,
+      'edit users with role UserRegistrationPending' => TRUE,
+      'edit users with role ' . $visitor_role_short_name => TRUE,
+      'edit users with role ' . $visitor_role_short_name . ' and other roles' => TRUE,
+      'cancel users with role ' . $visitor_role_short_name => TRUE,
+      'edit users with role ' . $member_role_short_name => TRUE,
+      'edit users with role ' . $member_role_short_name . ' and other roles' => TRUE,
+      'cancel users with role ' . $member_role_short_name => TRUE
+    );
+
+    user_role_change_permissions($role_obj->rid, $manager_permissions);
+    _cites_custom_forum_grant_permissions($tid, $role_obj->rid, 1, 0, 1, 1);
+  }
+}
+
+/**
+ * Implements hook_form_taxonomy_form_term_delete().
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
+function cites_custom_forum_form_taxonomy_form_term_delete($form, &$form_state) {
+  // delete roles that are connected to the forum
+  $forum_name = $form_state['values']['name'];
+  $manager_role = $forum_name . ' Manager';
+  $member_role = $forum_name . ' Member';
+  $visitor_role = $forum_name . ' Visitor';
+
+  if (user_role_load_by_name($manager_role)) {
+    user_role_delete($manager_role);
+  }
+
+  if (user_role_load_by_name($member_role)) {
+    user_role_delete($member_role);
+  }
+
+  if (user_role_load_by_name($visitor_role)) {
+    user_role_delete($visitor_role);
+  }
+}
+
+function _cites_custom_forum_grant_permissions($tid, $rid, $grant_view, $grant_update, $grant_delete, $grant_create) {
+  db_insert("forum_access")->fields(array(
+    "tid" => $tid,
+    "rid" => $rid,
+    "grant_view" => $grant_view,
+    "grant_update" => $grant_update,
+    "grant_delete" => $grant_delete,
+    "grant_create" => $grant_create,
+    "priority" => 0
+  ))->execute();
+}
+
+/**
+ * Implements hook_mail().
+ */
+function cites_custom_forum_mail($key, &$message, $params) {
+  if ($key == 'cites_custom_forum') {
+    $message['to'] = $params['to'];
+    $message['subject'] = $params['subject'];
+    $message['body'][] = $params['body'];
+  }
+}
+
+/**
+ * Implements hook_menu_alter
+ */
+function cites_custom_forum_menu_alter(&$items) {
+  // Accounts filter
+  $items['admin/config/people/accounts/fields']['access arguments'] = array('manage user account fields');
+  $items['admin/config/people/accounts/display']['access arguments'] = array('manage user account fields');
+  $items['admin/config/people/accounts']['access arguments'] = array('manage user account fields');
+  $items['admin/help']['access arguments'] = array('access help menu');
+}
+
+/**
+ * Implements hook_permission().
+ */
+function cites_custom_forum_permission() {
+  return array(
+    'manage user account fields' => array(
+      'title' => t('Manage user account fields'),
+      'description' => t('Customized users permission to manage user account fields @see cites_custom_forum.module'),
+    ),
+    'access help menu' => array(
+      'title' => t('Access help menu'),
+      'description' => t('Customized users permission to access help menu @see cites_custom_forum.module'),
+    ),
+  );
+}
+
+function _cites_custom_forum_send_mail_to_forum_managers($new_roles, $user_name) {
+  $mail_role_map = array();
+  $admin_role = user_role_load_by_name('administrator');
+  foreach ($new_roles as $new_role) {
+    $manager_role = preg_replace('/ ([^ ]+)$/', ' Manager', $new_role);
+    $role_obj = user_role_load_by_name($manager_role);
+    if ($role_obj == FALSE || $admin_role == FALSE) {
+      continue;
+    }
+
+    $query = db_select('users_roles', 'ur');
+    $query->join('users', 'u', 'u.uid = ur.uid');
+
+    $db_or = db_or();
+    $db_or->condition('ur.rid', $role_obj->rid, '=');
+    $db_or->condition('ur.rid', $admin_role->rid, '=');
+    $user_managers = $query
+        ->fields('u')
+        ->condition($db_or)
+        ->execute()
+        ->fetchAll();
+
+    foreach ($user_managers as $user_manager) {
+      $mail_role_map[$user_manager->mail][] = $new_role;
+    }
+  }
+  foreach ($mail_role_map as $mail => $roles) {
+    drupal_mail('cites_custom_forum', 'cites_custom_forum', $mail, LANGUAGE_NONE, array(
+      'to' => $mail,
+      'subject' => 'CITES: New Forum Roles Request',
+      'body' => $user_name . ' wants to become ' . implode(',', $roles)
+        ), NULL, TRUE);
+  }
+}
+
+/**
+ * Implements hook_form_forum_confirm_delete_alter
+ * @param array $form
+ * @param type $form_state
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
+function cites_custom_forum_form_forum_confirm_delete_alter(&$form, &$form_state) {
+  $form['#submit'] = array('cites_custom_forum_forum_confirm_delete_submit');
+}
+
+/**
+ * Implements hook_forum_confirm_delete_submit
+ * @param type $form
+ * @param type $form_state
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
+function cites_custom_forum_forum_confirm_delete_submit(&$form, &$form_state) {
+  forum_confirm_delete_submit($form, $form_state);
+  $deleted_forum_name = $form['name']['#value'];
+  user_role_delete($deleted_forum_name . ' Manager'); // delete forum manager role
+  user_role_delete($deleted_forum_name . ' Member'); // delete forum member role
+  user_role_delete($deleted_forum_name . ' Visitor'); // delete forum visitor role
+}
+
+/**
+ * Implements hook_form_forum_form_forum_submit
+ * @param type $form
+ * @param array $form_state
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
+function cites_custom_forum_form_forum_form_forum_submit(&$form, &$form_state) {
+  $form_state['values']['delete'] = TRUE;
+  forum_form_submit($form, $form_state);
+  if ($form_state['input']['op'] == 'Save') {
+    cites_custom_forum_form_forum_form_save($form, $form_state);
+  }
+}
+
+/**
+ * Implements hook_form_forum_form_save
+ * @param type $form
+ * @param type $form_state
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
+function cites_custom_forum_form_forum_form_save(&$form, &$form_state) {
+  if (isset($form['name']['#default_value']) && $form['name']['#default_value'] != '' && $form['name']['#default_value'] != $form_state['input']['name']) {
+    $old_forum_name = $form['name']['#default_value'];
+    user_role_delete($old_forum_name . ' Manager'); // delete manager role for old forum
+    user_role_delete($old_forum_name . ' Member'); // delete member role for old forum
+    user_role_delete($old_forum_name . ' Visitor'); // delete visitor role for old forum
+  }
+  $new_forum_name = $form_state['input']['name'];
+
+  $manager_role = $new_forum_name . ' Manager';
+  $member_role = $new_forum_name . ' Member';
+  $visitor_role = $new_forum_name . ' Visitor';
+  $tid = $form_state['values']['tid'];
+
+  if (!user_role_load_by_name($member_role)) {
+    user_role_save((object) array('name' => $member_role));
+    $role_obj = user_role_load_by_name($member_role);
+    $member_permissions = array(
+      'create forum content' => TRUE
+    );
+    user_role_change_permissions($role_obj->rid, $member_permissions);
+    _cites_custom_forum_grant_permissions($tid, $role_obj->rid, 1, 0, 0, 1);
+  }
+
+  if (!user_role_load_by_name($visitor_role)) {
+    user_role_save((object) array('name' => $visitor_role));
+    $role_obj = user_role_load_by_name($visitor_role);
+    _cites_custom_forum_grant_permissions($tid, $role_obj->rid, 1, 0, 0, 0);
+  }
+
+  if (!user_role_load_by_name($manager_role)) {
+    user_role_save((object) array('name' => $manager_role));
+    $role_obj = user_role_load_by_name($manager_role);
+    $member_role_short_name = preg_replace('/[^a-zA-Z0-9]/', '', $member_role);
+    $visitor_role_short_name = preg_replace('/[^a-zA-Z0-9]/', '', $visitor_role);
+    $manager_permissions = array(
+      'administer users' => TRUE,
+      'access administration pages' => TRUE,
+      'access administration menu' => TRUE,
+      'create forum content' => TRUE,
+      'edit users with no custom roles' => TRUE,
+      'edit users with role UserRegistrationPending' => TRUE,
+      'edit users with role ' . $visitor_role_short_name => TRUE,
+      'edit users with role ' . $visitor_role_short_name . ' and other roles' => TRUE,
+      'cancel users with role ' . $visitor_role_short_name => TRUE,
+      'edit users with role ' . $member_role_short_name => TRUE,
+      'edit users with role ' . $member_role_short_name . ' and other roles' => TRUE,
+      'cancel users with role ' . $member_role_short_name => TRUE
+    );
+
+    user_role_change_permissions($role_obj->rid, $manager_permissions);
+    _cites_custom_forum_grant_permissions($tid, $role_obj->rid, 1, 0, 1, 1);
+  }
+}
+
+/**
+ * Implements hook_form_forum_form_forum_alter
+ * @param array $form
+ * @param type $form_state
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
+function cites_custom_forum_form_forum_form_forum_alter(&$form, $form_state) {
+  $form['#submit'] = array(
+    'cites_custom_forum_form_forum_form_forum_submit'
+  );
+}
+

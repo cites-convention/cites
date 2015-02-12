@@ -1,0 +1,36 @@
+/* fixes for Internet Explorer 7 */
+
+#main-menu .nice-menu {
+width: 410px;
+}
+
+#sidebar-first .block-menu ul li {
+list-style-image: none;
+}
+
+.views-slideshow-pager-field-item,
+kbd,
+a.feed-icon,
+#main-menu-links,
+#main-menu .nice-menu,
+#main-menu-links li,
+#footer ul.menu,
+ul.action-links li {
+display: inline; /* IE7 does not support display:inline-block */
+}
+
+#footer-wrapper a {
+color: #666;
+}
+
+/*  display correctly the global submenu:
+    2 sibling elements selected for different z-indexes */
+#header {
+position: relative;
+z-index: 1000;
+}
+
+#main-wrapper {
+position: relative;
+z-index: 1;
+}

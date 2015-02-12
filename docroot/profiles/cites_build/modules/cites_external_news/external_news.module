@@ -1,0 +1,188 @@
+<?php
+/**
+ * Implements hook_node_info().
+ *
+ * We use hook_node_info() to define our node content type.
+ */
+function external_news_node_info() {
+  $items = array(
+    'external_news' => array(
+      'name' => t('External News'),
+      'base' => 'external_news',
+      'description' => t('External News Content Type.'),
+      'has_title' => '1',
+      'title_label' => t('Title'),
+      'locked' => TRUE,
+    ),
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_node_type_insert().
+ */
+function external_news_node_type_insert($content_type) {
+  if ($content_type->type == 'external_news') {
+    // Create all the fields we are adding to our content type.
+    foreach (_external_news_installed_fields() as $field) {
+      field_create_field($field);
+    }
+
+    // Create all the instances for our fields.
+    foreach (_external_news_installed_instances() as $instance) {
+      $instance['entity_type'] = 'node';
+      $instance['bundle'] = 'external_news';
+      field_create_instance($instance);
+    }
+  }
+}
+
+/**
+ * Implement hook_form().
+ */
+function external_news_form($node, $form_state) {
+  return node_content_form($node, $form_state);
+}
+
+/**
+ * Define the fields for our content type.
+ */
+function _external_news_installed_fields() {
+  $fields = array();
+
+  $fields['field_external_news_link'] = array(
+    'active'       => 1,
+    'cardinality'  => 1,
+    'deleted'      => 0,
+    'entity_types' => array(),
+    'field_name'   => 'field_external_news_link',
+    'foreign keys' => array(),
+    'indexes'      => array(),
+    'locked'       => 0,
+    'module'       => 'link',
+    'settings'     => array(
+      'attributes' => array(
+        'class'  => '',
+        'rel'    => '',
+        'target' => 'default'
+      ),
+      'display' => array(
+        'url_cutoff' => 80
+      ),
+      'enable_tokens'           => 1,
+      'entity_translation_sync' => FALSE,
+      'profile2_private'        => FALSE,
+      'title'                   => 'optional',
+      'title_maxlength'         => 128,
+      'title_value'             => '',
+      'url'                     => 0
+    ),
+    'translatable' => 1,
+    'type'         => 'link_field'
+  );
+
+  return $fields;
+}
+
+/**
+ * Define the field instances for our content type.
+ */
+function _external_news_installed_instances() {
+  $instances = array();
+
+  $instances['field_external_news_link'] = array(
+    'bundle'        => 'external_news',
+    'default_value' => NULL,
+    'deleted'       => 0,
+    'description'   => '',
+    'display'       => array(
+      'default' => array(
+        'label'    => 'above',
+        'module'   => 'link',
+        'settings' => array(),
+        'type'     => 'link_default',
+        'weight'   => 1
+      ),
+      'teaser' => array(
+        'label'    => 'above',
+        'settings' => array(),
+        'type'     => 'hidden',
+        'weight'   => 0
+      )
+    ),
+    'entity_type' => 'node',
+    'field_name'  => 'field_external_news_link',
+    'label'       => t('URL'),
+    'required'    => 1,
+    'settings'    => array(
+      'attributes' => array(
+        'class'              => '',
+        'configurable_title' => 0,
+        'rel'                => '',
+        'target'             => '_blank',
+        'title'              => ''
+      ),
+      'display' => array(
+        'url_cutoff' => 80
+      ),
+      'enable_tokens'           => 1,
+      'entity_translation_sync' => FALSE,
+      'rel_remove'              => 'default',
+      'title'                   => 'none',
+      'title_maxlength'         => 128,
+      'title_value'             => '',
+      'url'                     => 0,
+      'user_register_form'      => FALSE,
+      'validate_url'            => 1
+    ),
+    'widget' => array(
+      'active'   => 0,
+      'module'   => 'link',
+      'settings' => array(),
+      'type'     => 'link_field',
+      'weight'   => 0
+    )
+  );
+
+  return $instances;
+}
+
+class ExternalNews extends CitesBase {
+
+  public static $bundle = 'external_news';
+  public static $CACHE_ALL_OBJECTS = 'external_news_cache_all_external_news';
+
+  /**
+     * Create new external_news
+     * @param string $name Name for the news in English
+     * @param string $link_url url for the link
+     * @return stdClass Drupal node object
+     */
+    static function node_create($name, $link_url) {
+        if(empty($name) || empty($link_url)) {
+            self::println('Cannot create an External News without name (%s) and link URL ($s)', $name, $link_url);
+            return NULL;
+        }
+        $node = self::drupal_node_create($name, self::$bundle);
+        self::set_link_field_single_value($node, 'field_external_news_link', array('field_external_news_link' => array('url' => $link_url)));
+        node_save($node);
+        self::cache_clear();
+        return $node;
+    }
+
+  /**
+     * Invalidate the cache data for this class
+     */
+    static function cache_clear() {
+        drupal_static_reset(self::$CACHE_ALL_OBJECTS);
+    }
+}
+
+
+/**
+ * Implements hook_views_api().
+ */
+function external_news_views_api() {
+  return array('api' => 3);
+}

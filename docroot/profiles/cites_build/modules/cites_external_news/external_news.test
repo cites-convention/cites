@@ -1,0 +1,77 @@
+<?php
+
+/**
+ * @file
+ * Simpletest case for CITES External News module.
+ *
+ * Verify CITES External News module functionality.
+ */
+
+/**
+ * Functionality tests for CITES External News module.
+ */
+class ExternalNewsTestCase extends DrupalWebTestCase {
+
+	protected static $bundle;
+
+	public static function getInfo() {
+		return array(
+			'name' => 'External News Content Type',
+			'description' => 'Verify CITES External News module functionality.',
+			'group' => 'CITES',
+		);
+	}
+
+	function setUp() {
+		//Set installation profile
+		$this->profile = 'cites_build';
+		//Enable the module.
+		parent::setUp('external_news');
+		self::$bundle = ExternalNews::$bundle;
+	}
+
+	/**
+	* API-level content type test.
+	*
+	* This test will verify that when the module is installed, it:
+	*   - Adds a new content type, country.
+	*   - Attaches all defined fields.
+	*/
+	function test_installation_api() {
+		// At this point, the module should be installed.
+		// First check for our content type and then for it s attached fields.
+		$node_type = node_type_get_type('external_news');
+		$this->assertTrue($node_type, 'External News Type was created.', 'API');
+
+		$fields = _external_news_installed_instances();
+		foreach (array_keys($fields) as $field_name) {
+			$field = field_info_instance('node', $field_name, 'external_news');
+			$this->assertTrue($field, 'Field: ' . $field_name . ' was attached to external_news.', 'API');
+		}
+	}
+
+	/**
+	* Verify the functionality of the country module.
+	*/
+	function test_node_create_post() {
+		// Create and login user.
+		$account = $this->drupalCreateUser(array('access content', 'create external_news content'));
+		$this->drupalLogin($account);
+
+		$language = 'und';
+		// Create a new node.
+		$edit = array(
+			"title_field[$language][0][value]" => $this->randomName(),
+			"field_external_news_link[$language][0][url]" => 'http://www.emag.ro'
+		);
+		$this->drupalPost('node/add/external-news', $edit, t('Save'));
+		$this->assertText("External News " . $edit["title_field[$language][0][value]"] . " has been created", "Found node creation message");
+	}
+
+	function test_node_create() {
+		$node = ExternalNews::node_create('external news test', 'http://www.emag.ro');
+		$node = node_load($node->nid);
+		$this->assertEqual('external news test', $node->title);
+		$this->assertEqual('http://www.emag.ro', CitesBase::get_link_field_url_single_value($node, 'field_external_news_link'));
+	}
+}

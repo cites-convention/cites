@@ -1,0 +1,79 @@
+<?php
+class CitesForumWebTestCase extends DrupalWebTestCase {
+  /**
+   * A user with various administrative privileges.
+   */
+  protected $admin_user;
+
+  /**
+   * A user that can create forum topics and edit its own topics.
+   */
+  protected $edit_own_topics_user;
+
+  /**
+   * A user that can create, edit, and delete forum topics.
+   */
+  protected $edit_any_topics_user;
+
+  /**
+   * A user with no special privileges.
+   */
+  protected $web_user;
+
+  /**
+   * An array representing a container.
+   */
+  protected $container;
+
+  /**
+   * An array representing a forum.
+   */
+  protected $forum;
+
+  /**
+   * An array representing a root forum.
+   */
+  protected $root_forum;
+
+  /**
+   * An array of forum topic node IDs.
+   */
+  protected $nids;
+
+  public static function getInfo() {
+    return array(
+      'name' => 'CITES Forum functionality',
+      'description' => 'Create, view, edit, delete, and change forum entries and verify its consistency in the database.',
+      'group' => 'CITES',
+    );
+  }
+
+  function setUp() {
+    parent::setUp('taxonomy', 'comment', 'forum', 'advanced_forum', 'forum_access');
+
+    // Create users.
+    $this->admin_user = $this->drupalCreateUser(array(
+      'access administration pages',
+      'administer modules',
+      'administer blocks',
+      'administer forums',
+      'administer menu',
+      'administer taxonomy',
+      'create forum content',
+    ));
+    $this->edit_any_topics_user = $this->drupalCreateUser(array(
+      'access administration pages',
+      'create forum content',
+      'edit any forum content',
+      'delete any forum content',
+    ));
+    $this->edit_own_topics_user = $this->drupalCreateUser(array(
+      'create forum content',
+      'edit own forum content',
+      'delete own forum content',
+    ));
+    $this->web_user = $this->drupalCreateUser(array());
+  }
+
+
+}

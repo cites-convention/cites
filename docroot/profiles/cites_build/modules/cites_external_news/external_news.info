@@ -1,0 +1,15 @@
+name = CITES external news module
+description = Provides support for news section
+package = CITES
+
+dependencies[] = locale
+dependencies[] = link
+
+files[] = external_news.test
+
+; Information added by fserver
+core = "7.x"
+datestamp = "1378125826"
+project = "cites_external_news"
+project status url = "http://fserver.eaudeweb.ro/fserver"
+version = "7.x-1.1"

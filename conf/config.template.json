@@ -1,0 +1,28 @@
+{
+    "db" : {
+        "host": "localhost",
+        "username" : "root",
+        "password" : "root",
+        "port": 3306,
+        "database" : "cites_wwd",
+        "root_username": "root",
+        "root_password": "root"
+    },
+    "admin" : {
+        "username": "admin",
+        "password": "admin",
+        "email": "account@example.com"
+    },
+    "uri": "http://wwd.localhost",
+    "variables": {
+        "environment": "development",
+        "site_name": "My Drupal Site",
+        "site_mail": "account@example.com",
+        "file_temporary_path": "/tmp",
+        "file_private_path" : "/var/local/cms/private_files",
+        "search_api_attachments_extract_using": "solr",
+        "search_api_attachments_extracting_servlet_path": "update/extract",
+        "search_api_attachments_tika_path": "",
+        "search_api_attachments_tika_jar": ""
+    }
+}

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the CITES contacts feature.
+ */
+
+include_once 'cites_contact.features.inc';

@@ -1,0 +1,33 @@
+/* Google Site Search */
+
+ol.google-search-results {
+  padding-right: 0;
+}
+
+.google-search-results .gss-result img {
+  float: right;
+  margin-left: 1em;
+  margin-right: 0;
+}
+
+
+
+/* Views Slideshow */
+
+.views-slideshow-controls-text-previous {
+  left: auto;
+  right: 15px;
+}
+
+.views-slideshow-controls-text-next {
+  left: 15px;
+  right: auto;
+}
+
+.views-slideshow-controls-text-next {
+  background-position: 0 0;
+}
+
+.views-slideshow-controls-text-previous {
+  background-position: -30px 0;
+}

@@ -1,0 +1,414 @@
+/* CITES Styles */
+
+.khaki {
+  border-collapse: collapse;
+}
+
+.khaki th {
+  background-color: #f0ede6;
+  border: 1px solid #ccc;
+  color: #333;
+  padding: 4px;
+  text-align: center;
+}
+
+.khaki td {
+  background-color: #fafaf6;
+  border: 1px solid #ccc;
+  padding: 3px;
+  padding: 4px;
+  vertical-align: top;
+}
+
+.khaki td a {
+  background-image: none;
+  color: #360;
+  text-decoration: none;
+}
+
+.khaki td a:link,
+.khaki td a:visited {
+  background-color: #fafaf6;
+  background-image: none;
+  color: #360;
+}
+
+.khaki td a:hover,
+.khaki td a:active {
+  background-color: #fafaf6;
+  background-image: none;
+  color: #f63;
+}
+
+.khakisub {
+  color: #663;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.table1 {
+  border-collapse: collapse;
+}
+
+.table1 td {
+  background-color: #fafaf6;
+  border: 1px solid #ccc;
+  padding: 6px;
+  vertical-align: top;
+}
+
+.hotbox {
+  border-collapse: collapse;
+  margin:2px 10px;
+  padding: 15px;
+}
+
+.hotbox th {
+  background-color: #c90;
+  border: 1px solid #ccc;
+  color: #333;
+  padding: 4px;
+}
+
+.hotbox td {
+  background-color: #fafaf6;
+  border: 1px solid #ccc;
+}
+
+.hotbox td a {
+  background-image: none;
+  text-decoration: none;
+  width: 100%;
+}
+
+.hotbox td a:link,
+.hotbox td a:visited {
+  background-color: #fafaf6;
+  background-image: none;
+  color: #000;
+}
+
+.hotbox td a:hover,
+.hotbox td a:active {
+  background-color: #fafaf6;
+  background-image: none;
+  color: #f63;
+}
+
+.hotbox2 {
+  border-collapse: collapse;
+  margin: 4px 13px;
+}
+
+.hotbox2 th {
+  background-color: #c90;
+  border: 1px solid #ccc;
+  color: #333;
+  padding: 4px;
+}
+
+.hotbox2 td {
+  background-color: #fafaf6;
+  border: 1px solid #ccc;
+  padding: 4px;
+}
+
+.hotbox2 td a {
+  background-image: none;
+  text-decoration: underline;
+}
+
+.hotbox2 td a:link,
+.hotbox2 td a:visited {
+  background-color: #fafaf6;
+  background-image: none;
+  color: #360;
+}
+
+.hotbox2 td a:hover,
+.hotbox2 td a:active {
+  background-color: #fafaf6;
+  background-image: none;
+  color: #f63;
+}
+
+.pic_centre {
+  background-color: #f4f5f0;
+  float: none;
+  margin:3px;
+  position: fixed;
+  text-align: center;
+  width: 80%;
+}
+
+.pic_centre dl {
+  border: 1px solid #d2d2d2;
+  margin: 0 auto;
+  padding: 3px;
+}
+
+.pic_centre dd {
+  font-size: 0.86em;
+  margin: 0;
+  padding: 2px;
+  text-align: left;
+}
+
+.pic_right {
+  background-color: #f4f5f0;
+  float: right;
+  margin: 1px 3px 10px 15px;
+  position: relative;
+}
+
+.pic_right dl {
+  border: 1px solid #d2d2d2;
+  margin: 0 auto;
+  padding: 3px;
+}
+
+.pic_right dd {
+  font-size: 0.86em;
+  margin: 0;
+  padding: 2px;
+  text-align: left;
+}
+
+.pic_right_list a,
+.pic_right_list a:visited {
+  color: #333;
+  text-decoration: none;
+}
+
+.pic_right_list a:hover {
+  color: #f63;
+}
+
+.pic_left {
+  background-color: #f4f5f0;
+  float: left;
+  margin: 2px 15px 10px 0;
+  position: relative;
+}
+
+.pic_left dl {
+  border: 1px solid #d2d2d2;
+  margin: 0 auto;
+  padding: 3px;
+}
+
+.pic_left dd {
+  font-size: 0.86em;
+  margin: 0;
+  padding: 2px;
+  text-align: center;
+}
+
+.pic_left_list a,
+.pic_left_list a:visited {
+  color: #333;
+  text-decoration: none;
+}
+
+.pic_left_list a:hover {
+  color: #f63;
+  text-decoration: none;
+}
+
+.i_left {
+  margin: 2px 16px 10px 0;
+  text-align: left;
+}
+
+.nectar {
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.nectar td {
+  background-color: #fafaf6;
+  border: 1px solid #ccc;
+  font-size: 0.96em;
+  text-align: center;
+}
+
+.nectar td a {
+  background-color: #fafaf6;
+  color: #333;
+  display: block;
+  padding: 2px;
+  text-decoration: none;
+}
+
+.nectar td a:link,
+.nectar td a:visited {
+  background-color: #fafaf6;
+  color: #333;
+  text-decoration: none;
+}
+
+.nectar td a:hover,
+.nectar td a:active {
+  background-color: #567b29;
+  color: #fff;
+  text-decoration: none;
+}
+
+.knoir {
+  border-collapse: collapse;
+}
+
+.knoir th {
+  background-color: #f0ede6;
+  border: 1px solid #ccc;
+  color: #333;
+  padding: 4px;
+  text-align: center;
+}
+
+.knoir td {
+  background-color: #fafaf6;
+  border: 1px solid #ccc;
+  padding: 3px;
+  padding: 4px;
+  vertical-align: top;
+}
+
+.knoir td a {
+  background-image: none;
+  color: #000;
+  text-decoration: none;
+}
+
+.knoir td a:link, .knoir td a:visited {
+  background-color: #fafaf6;
+  background-image: none;
+  color: #000;
+}
+
+.knoir td a:hover,
+.knoir td a:active {
+  background-color: #fafaf6;
+  background-image: none;
+  color: #f63;
+}
+
+.bggreen {
+  background-color: #f9fffc;
+  border-collapse: collapse;
+  border: 1px solid #090;
+  height:25px;
+}
+
+.bggreen a {
+  background-image: none;
+  display: block;
+  padding: 4px;
+  text-decoration: none;
+}
+
+.bggreen a:link,
+.bggreen a:visited {
+  background-color: #f9fffc;
+  color: #000;
+  text-decoration: none;
+}
+
+.bggreen a:hover,
+.bggreen a:active {
+  background-color: #cbfedf;
+  color: #000;
+  text-decoration: none;
+}
+
+.footnote  {
+  color: #333;
+  font-size: 11px;
+  font-style: italic;
+  font-weight: 200;
+}
+
+.red {
+  color: #f30;
+}
+
+.grey {
+  color: #999;
+  font-size: 12px;
+}
+
+.headblack {
+  font-size: 17px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.lastupdate {
+  color: #666;
+  font-size: 10px;
+  font-style: italic;
+  text-align:center;
+}
+
+.mbc {
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.m_green {
+  color: #360;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.m_black {
+  color: #000;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.black_left {
+  color: #000;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.nbc {
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.slidettl {
+  color: #fff;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  padding: 4px;
+  text-align: center;
+}
+
+.small  {
+  font-size: 10px;
+}
+
+.app {
+  font-style: italic;
+  font-weight: bold;
+}
+
+.back {
+  font-size: 12px;
+  margin:0 0 30px;
+}
+
+.table_insert {
+  margin: 0;
+  padding: 0;
+}
+
+#content .node-article.node-full img {
+  margin: 8px 6px;
+}

@@ -1,0 +1,44 @@
+name        = CITES primary theme
+description = Tableless multi-column theme designed for CITES after the original theme from the static website.
+core        = 7.x
+package = CITES
+project status url = http://fserver.eaudeweb.ro/fserver
+
+stylesheets[all][]   = css/layout.css
+stylesheets[all][]   = css/style.css
+stylesheets[all][]   = css/colors.css
+stylesheets[all][]   = css/modules.css
+stylesheets[all][]   = css/cites.css
+stylesheets[print][] = css/print.css
+
+scripts[] = script.js
+
+regions[header]      = Header
+regions[help]        = Help
+regions[page_top]    = Page top
+regions[page_bottom] = Page bottom
+regions[highlighted] = Highlighted
+
+regions[featured]       = Featured
+regions[front]          = Front page
+regions[content]        = Content
+regions[sidebar_first]  = Sidebar first
+regions[sidebar_second] = Sidebar second
+
+regions[footer] = Footer
+
+features[] = node_user_picture
+features[] = comment_user_picture
+features[] = comment_user_verification
+features[] = favicon
+features[] = main_menu
+features[] = secondary_menu
+
+settings[shortcut_module_link] = 0
+
+; Information added by fserver
+core = "7.x"
+datestamp = "1403786951"
+project = "cites_theme"
+project status url = "http://fserver.eaudeweb.ro/fserver"
+version = "7.x-1.26"

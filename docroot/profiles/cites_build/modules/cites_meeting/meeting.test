@@ -1,0 +1,32 @@
+<?php
+
+/**
+ * @file
+ * Simpletest case for CITES Meeting module.
+ *
+ * Verify CITES Meeting module functionality.
+ */
+
+/**
+ * Functionality tests for CITES Meeting module.
+ */
+class MeetingTestCase extends DrupalWebTestCase {
+
+	protected static $bundle;
+
+	public static function getInfo() {
+		return array(
+			'name' => 'Meeting Content Type',
+			'description' => 'Verify CITES Meeting module functionality.',
+			'group' => 'CITES',
+		);
+	}
+
+	function setUp() {
+		//Set installation profile
+		$this->profile = 'cites_build';
+		//Enable the module.
+		parent::setUp('meeting');
+		self::$bundle = Meeting::$bundle;
+	}
+}
