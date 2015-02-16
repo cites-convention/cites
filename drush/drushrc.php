@@ -263,47 +263,89 @@ if (file_exists($json_path)) {
 $options['variables'] = (array) $cfg->variables;
 
 $options['init-modules'] = array(
+  'acl',
+  'content_access',
+  'forum_access',
+  'admin_menu',
+  'admin_views',
+  'filter_perms',
+  'front_page',
   'ctools',
 
-  'entity',
-  'locale',
-  'entity_translation',
-  'i18n',
+  'administerusersbyrole',
+
+  'cites_contact',
+  'country',
+  'document',
+  'external_news',
+  'cites_custom_forum',
+  'institution',
+  'meeting',
+  'parties_notification',
+  'cites_reports',
+  'slideshow',
+  'cites',
+  'cites_views',
+  'cites_schema_changes',
+  'contextual_menu',
+  'custom_services_resource',
+
+  'context',
+  'context_ui',
 
   'date',
-  'strongarm',
-  'variable',
-  'taxonomy_access_fix',
+  'date_api',
+  'date_range_formatter',
+  'date_views',
 
-  'views',
-  'views_ui',
-  'views_bulk_operations',
-
-//  'migrate',
+  'delete_all',
   'features',
+  'email',
   'entityreference',
+  'field_collection',
   'link',
   'title',
-  'wysiwyg',
-  'pathauto',
-  'uuid',
 
-//  'fe_block',
+  'htmlmail',
+  'mailsystem',
+  'privatemsg',
+  'simplenews',
 
-  'search_api',
-  'facetapi',
-  'search_api_facetapi',
-  'search_api_solr',
+  'imce',
+  'imce_filefield',
+  'imce_mkdir',
 
-  'search_api_et',
-  'search_api_attachments',
-  'search_api_et_solr',
-  'search_api_attachments_field_collections',
+  'l10n_update',
+  'entity_translation',
+  'i18n_block',
+  'i18n_field',
+  'i18n',
+  'i18n_menu',
+  'i18n_string',
+  'i18n_taxonomy',
+  'i18n_translation',
+  'i18nviews',
 
-  'cms_search',
-
-  'imce_wysiwyg',
-
+  'advanced_forum',
+  'author_pane',
+  'chain_menu_access',
+  'chosen',
+  'entity',
+  'entity_token',
+  'gss',
+  'html_title',
+  'jquery_countdown_timer',
+  'libraries)
+  'linkchecker)
+  'mail_edit)
+  'nice_menus)
+  'node_notify)
+  'on_the_web)
+  'password_hustle)
+  'password_policy)
+  'profile2)
+  'site_map)
+  'token
 );
 switch ($cfg->variables->cms_instance) {
   case 'cms':

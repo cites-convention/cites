@@ -8,6 +8,7 @@ conf/config.json
 conf/apache.conf
 docroot/robots.txt
 tmp
+static
 
 #Subdomains symlinks.
 docroot/manage
