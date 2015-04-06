@@ -346,6 +346,8 @@ $options['init-modules'] = array(
   'profile2',
   'site_map',
   'token',
+
+  'memcache_storage',
 );
 switch ($cfg->variables->cms_instance) {
   case 'cms':
