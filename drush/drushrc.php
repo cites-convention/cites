@@ -335,17 +335,17 @@ $options['init-modules'] = array(
   'gss',
   'html_title',
   'jquery_countdown_timer',
-  'libraries)
-  'linkchecker)
-  'mail_edit)
-  'nice_menus)
-  'node_notify)
-  'on_the_web)
-  'password_hustle)
-  'password_policy)
-  'profile2)
-  'site_map)
-  'token
+  'libraries',
+  'linkchecker',
+  'mail_edit',
+  'nice_menus',
+  'node_notify',
+  'on_the_web',
+  'password_hustle',
+  'password_policy',
+  'profile2',
+  'site_map',
+  'token',
 );
 switch ($cfg->variables->cms_instance) {
   case 'cms':
