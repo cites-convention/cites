@@ -1990,9 +1990,9 @@ tb-megamenu .nav > li > a:focus,
 .tb-megamenu .nav li.dropdown.open.active > .dropdown-toggle,
 .tb-megamenu .nav > li.dropdown.open.active > a:hover {
   background-color: #e54e4b; 
-  /*border-color: #444;*/
+  border-color: #fff;
   color: #eee;
-  background: url("/profiles/cites_build/themes/cites_theme/images/arrow-right-green.gif") no-repeat left 8px #EFEEEC;
+  background: url("/profiles/cites_build/themes/cites_theme/images/arrow-right-green.gif") no-repeat left 8px #abba64;
 }
 
 .tb-megamenu .mega > .mega-dropdown-menu {
@@ -2065,6 +2065,5 @@ div#block-tb-megamenu-menu-mike-places {
   left: 11px;
 
 }
-
 
 
