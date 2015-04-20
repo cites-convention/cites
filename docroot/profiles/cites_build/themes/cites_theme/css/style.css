@@ -1926,3 +1926,145 @@ div.admin-panel .description {
 #footer-wrapper .poll .bar .foreground {
   background-color: #ddd;
 }
+
+/* MIKE Portal Places megamenu */
+
+.tb-megamenu .nav > li {
+  float: none;
+  margin-left: 0;
+}
+
+.tb-megamenu .nav > li > a {
+  border-right: 0px solid #222;
+  border-top: 0;
+  color: #686868;
+  font-weight: normal;
+  padding: 5.4px 18px;
+  text-shadow: none;
+  text-decoration: none;
+  border-bottom: 1px solid #fff;
+  background: url("/profiles/cites_build/themes/cites_theme/images/arrow-right-green.gif") no-repeat left 8px #EFEEEC;
+}
+
+tb-megamenu .nav > li > a:focus,
+.tb-megamenu .nav > li > a:hover {
+  background-image: url("/profiles/cites_build/themes/cites_theme/images/arrow-right-red.gif");
+  background-color: #567b29;  
+  color: #fff !important;  
+  text-decoration: none;
+  text-shadow: none;
+  outline: none;
+}
+
+
+.tb-megamenu .dropdown-menu {
+  position: absolute;
+  top: -900%;
+  left: 170px;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  list-style: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-bottom: 3px solid #e65855;
+  border-top: none;
+  *border-right-width: 2px;
+  *border-bottom-width: 2px;
+  padding: 0;
+  margin: 0;
+  -webkit-border-radius:0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
+}
+
+.tb-megamenu .nav li.dropdown.active > .dropdown-toggle,
+.tb-megamenu .nav li.dropdown.open.active > .dropdown-toggle,
+.tb-megamenu .nav > li.dropdown.open.active > a:hover {
+  background-color: #e54e4b; 
+  /*border-color: #444;*/
+  color: #eee;
+  background: url("/profiles/cites_build/themes/cites_theme/images/arrow-right-green.gif") no-repeat left 8px #EFEEEC;
+}
+
+.tb-megamenu .mega > .mega-dropdown-menu {
+  min-width: 400px;
+  display: none;
+}
+
+
+
+.tb-megamenu .nav li.dropdown.open > .dropdown-toggle,
+.tb-megamenu .nav li.dropdown.open.active > .dropdown-toggle {
+  background-color: #567B29;
+  color: #abba64;
+}
+.tb-megamenu .nav > li.dropdown.open.active > a:hover,
+.tb-megamenu .nav > li.dropdown.open.active > a:focus {
+  background-color: #567B29;
+  color: #abba64;
+}
+
+.tb-megamenu .dropdown-menu li > a:hover, 
+.tb-megamenu .dropdown-menu li > a:focus, 
+.tb-megamenu .dropdown-submenu:hover > a {
+  color: #abba64;
+}
+
+.tb-megamenu .nav > .active > a,
+.tb-megamenu .nav > .active > a:hover,
+.tb-megamenu .nav > .active > a:focus {
+  color: #fff;
+  text-shadow: none;
+  background-color: #abba64;
+  background-image: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  outline: none;
+  background: url("/profiles/cites_build/themes/cites_theme/images/arrow-right-green.gif") no-repeat left 8px #abba64;
+}
+
+
+
+div#block-tb-megamenu-menu-mike-places {
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    background-color: #567b29;
+    border-radius: 8px;
+    border: none;
+    color:#ffff;
+    text-shadow: 0 0px 0 #fff !important;
+    color: white;
+}
+
+#block-tb-megamenu-menu-mike-places > h2:nth-child(1) {text-shadow: 0 0px 0 #fff !important;}
+
+#block-tb-megamenu-menu-mike-places > div:nth-child(2){
+  font-size: 1em;
+  line-height: 1.4;
+  margin: 0px;
+  padding: 0px 11px 13px 10px;
+  left: 11px;
+
+}
+
+#block-tb-megamenu-menu-mike-places .content {
+  font-size: 1em;
+  line-height: 1.4;
+  margin: 0px;
+  padding: 0px 0px 11px 0px;
+  left: 11px;
+
+}
+
+
+
