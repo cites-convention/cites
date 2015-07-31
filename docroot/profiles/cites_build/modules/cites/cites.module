@@ -299,3 +299,96 @@ class CitesBase {
         return $ret;
     }
 }
+
+/**
+ * Expire a single path pattern from DrupalDatabaseCache and Varnish.
+ *
+ * @param string $path
+ *   Absolute path (ex. /[language]/node/1234)
+ */
+function cites_expire_page($path) {
+  if (module_exists('varnish')) {
+    global $base_root;
+    $host = _varnish_get_host();
+    /* Explicit expire of affected pages in cache_page */
+    // http://my.domain.com/path/to/page
+    cache_clear_all($base_root . $path, 'cache_page');
+    // /path/to/page
+    varnish_purge($host, $path);
+  }
+}
+
+/**
+ * Expire a single path pattern from DrupalDatabaseCache and Varnish.
+ *
+ * @param string $path
+ *   Absolute path (ex. path/to/view) - no prefix slash!
+ */
+function cites_expire_view_page($path) {
+  if (module_exists('varnish')) {
+    global $base_root;
+    $host = _varnish_get_host();
+    /* Explicit expire of affected pages in cache_page */
+    // http://my.domain.com/[language]/path/to/page
+    foreach(language_list() as $language => $ob) {
+      cache_clear_all($base_root . '/' . $language . '/' . $path, 'cache_page');
+    }
+    // path/to/page
+    varnish_purge($host, $path);
+  }
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function cites_node_update($node) {
+//  Content: Type (= Article) -- Content: Tags (= Secretary-General of CITES) - news/sg/index.php
+//  Content: Type (= Article) -- Content: Tags (= Press releases) - news/pr/index.php
+//  Content: Type (= Article) -- Content: Tags (= Other news items) - news/other/index.php
+//  Content: Type (= Article) -- Content: Tags (= Sharks) - prog/shark/about.php
+//  Content: Type (= Meeting) -- Content: Type (empty) - news/calendar.php
+//  Content: Type (= Meeting) -- Content: Tags (or Marine, Sharks) - prog/shark/calendar.php
+//  Content: Type (= Document) -- Content: Type (= Decision) - dec/index.php
+//  Content: Type (= Meeting) -- Content: Type (= COP) - cop/index.php
+//  Content: Type (= Meeting) -- Content: Type (= SC) - com/sc/index.php
+//  Content: Type (= Meeting) -- Content: Type (= AC) - com/ac/index.php
+//  Content: Type (= Meeting) -- Content: Type (= PC) - com/pc/index.php
+//  Content: Type (= Country Type) - cms/index.php/component/cp/country/%/national-focal-points
+//  Content: Type (= Notification to the parties) - notif/index.php
+
+  // clear cache for views
+  switch ($node->type) {
+    case 'article':
+      cites_expire_view_page('news/sg/index.php');
+      cites_expire_view_page('news/pr/index.php');
+      cites_expire_view_page('news/other/index.php');
+      cites_expire_view_page('prog/shark/about.php');
+      break;
+    case 'country':
+      cites_expire_view_page('cms/index.php/component/cp/country/%/national-focal-points');
+      break;
+    case 'document':
+      cites_expire_view_page('dec/index.php');
+      break;
+    case 'external_news':
+      cites_expire_page('');
+      break;
+    case 'meeting':
+      cites_expire_page('');
+      cites_expire_view_page('news/calendar.php');
+      cites_expire_view_page('prog/shark/calendar.php');
+      cites_expire_view_page('cop/index.php');
+      cites_expire_view_page('com/sc/index.php');
+      cites_expire_view_page('com/ac/index.php');
+      cites_expire_view_page('com/pc/index.php');
+      break;
+    case 'parties_notification':
+      cites_expire_page('');
+      cites_expire_view_page('notif/index.php');
+      break;
+  }
+
+  // clear cache for page
+  $node_path = 'node/' . $node->nid;
+  cites_expire_page($node_path);
+}
