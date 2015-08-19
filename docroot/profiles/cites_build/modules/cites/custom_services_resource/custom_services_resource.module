@@ -15,7 +15,6 @@ function custom_services_resource_rest_server_response_formatters_alter(&$format
 
 class ContractingPartiesServicesXMLFormatter extends ServicesXMLFormatter {
   public function render($data) {
-    
     $doc = new DOMDocument('1.0', 'utf-8');
     $root = $doc->createElement('Document');
     $treaty = $doc->createElement('Treaty');
@@ -53,15 +52,31 @@ class ContractingPartiesServicesXMLFormatter extends ServicesXMLFormatter {
           $key = preg_replace('/[^A-Za-z0-9_]/', '_', $key);
           $key = preg_replace('/^([0-9]+)/', '_$1', $key);
         }
-        if($key != 'nid') {
-          if($key == 'Official_name' || $key == 'Date_of_joining' || $key == 'Entry_into_force' || $key == 'node_title' || $key == 'Type') {
-            $key = 'Entry';
-          }
-          $element = $doc->createElement($key);
-          $parent->appendChild($element);
-          $this->xml_recursive($doc, $element, $value);
+        // Ignore these fields
+        if(in_array($key, array('nid', 'ISO2', 'ISO3'))) {
+          continue;
         }
-       
+        $original_key = $key;
+        if($key == 'Official_name' || $key == 'Date_of_joining' || $key == 'Entry_into_force' || $key == 'node_title' || $key == 'Type') {
+          $key = 'Entry';
+        }
+        /** @var DOMElement $element */
+        $element = $doc->createElement($key);
+        switch($original_key) {
+          case 'Official_name':
+            $element->setAttribute('type', 'country');
+            $element->setAttribute('ISO2', $data['ISO2']);
+            $element->setAttribute('ISO3', $data['ISO3']);
+            break;
+          case 'Entry_into_force':
+            $element->setAttribute('doc', 'Entry into force date');
+            break;
+          case 'Date_of_joining':
+            $element->setAttribute('doc', 'Date of joining');
+            break;
+        }
+        $parent->appendChild($element);
+        $this->xml_recursive($doc, $element, $value);
       }
 
       if (!$assoc) {
