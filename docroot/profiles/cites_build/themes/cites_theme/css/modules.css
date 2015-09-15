@@ -1198,3 +1198,11 @@ th.views-field.views-field-nothing {
 .view-list-of-contracting-parties.view-id-list_of_contracting_parties.view-display-id-page table.views-table.cols-6 {
     border: 1px solid #ccc;
 }
+
+
+/* NDF portal */
+
+/* table width adjustments */
+.view-dom-id-1739f5bb1b3a20680ec8ae307d4f6066 table{
+    width: 100%;
+}
