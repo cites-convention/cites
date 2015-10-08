@@ -348,6 +348,10 @@ $options['init-modules'] = array(
   'token',
 
   'memcache_storage',
+
+  'job_scheduler',
+  'feeds',
+  'feeds_tamper',
 );
 switch ($cfg->variables->cms_instance) {
   case 'cms':
