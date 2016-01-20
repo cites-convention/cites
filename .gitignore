@@ -9,6 +9,18 @@ conf/apache.conf
 docroot/robots.txt
 tmp
 static
+CHANGELOG.txt
+COPYRIGHT.txt
+INSTALL.mysql.txt
+INSTALL.pgsql.txt
+INSTALL.sqlite.txt
+INSTALL.txt
+LICENSE.txt
+MAINTAINERS.txt
+PATCHES.txt
+README.txt
+UPGRADE.txt
+web.config
 
 #Subdomains symlinks.
 docroot/manage
