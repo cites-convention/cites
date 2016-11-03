@@ -12,12 +12,8 @@ Patch documentation should be in the following format:
   * Fix i18n_string error undifined method string_remove when using build function.
   * /patches/i18n_string_fix_install_error_string_remove.patch
 
-
-Example:
-
 * views
-  * Add CSS class to read-more link on trimmed text field
-  * http://drupal.org/node/1557926
-  * http://drupal.org/files/views-more_link_class-1557926.patch
+  * Fix Notice: Undefined index: flagging in views_handler_field_field->access()
+  * https://www.drupal.org/node/2331209#comment-11671671
+  * /patches/views/2331209-32.patch
 
----
