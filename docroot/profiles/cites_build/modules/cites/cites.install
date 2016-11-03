@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * Cleanup - drupal core update
+ * For more information, see "https://www.drupal.org/node/2487215"
+ */
+function cites_update_7001() {
+    $modules = array(
+      'cites_importforum',
+      'cites_import_listserver',
+      'import_html_indexes',
+      'import_html_replace',
+      'import_html_scraping_rules',
+      'import_html_skip_forms',
+      'import_html',
+    );
+    db_delete('system')
+      ->condition('name', $modules, 'IN')
+      ->condition('type', 'module')
+      ->execute();
+}
+
