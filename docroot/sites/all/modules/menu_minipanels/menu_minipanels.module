@@ -1,0 +1,385 @@
+<?php
+/**
+ * @file
+ * Menu MiniPanels provides a flexible "mega menu" solution for Drupal by
+ * allowing a minipanel to be associated with a Drupal menu item. When that
+ * menu item is hovered, the minipanel content will be shown using standard
+ * CSS :hover techniques enhanced by CSS3 transition effects.
+ *
+ *
+ * Technical Overview:
+ *
+ * Due to the Drupal 7 execution path it is necessary to do this in multiple
+ * steps:
+ * 1. The hook_theme_registry_alter() function is used to inject minipanels
+ *    into menu item links using a theme function injection technique
+ *    that doesn't disrupt the final theme function.
+ * 2. When links or menu links are being displayed they are ran through the
+ *    theme_link function, where our classes and the minipanel is rendered
+ *    and appended to the link.
+ * 3. The hook_page_alter() function scans through all the menus to determine
+ *    if the current request requires loading the module's assets.
+ */
+
+/**
+ * Implements hook_help().
+ */
+function menu_minipanels_help($path, $arg) {
+  switch ($path) {
+    case 'admin/config/user-interface/menu_minipanels':
+      return '<p>' . t('Menu MiniPanels Version 2 has removed the dependency on the qTip tooltip library and relies on CSS for hover and transition effects.  Enhanced menu functionality via JavaScript, such as HoverIntent and Mobile touch device support, may be added with the <a href="!nice_menus">Nice Menus</a>, <a href="!superfish">Superfish</a>, or <a href="!dhtml_menu">DHTML Menu</a> modules.', array(
+          '!nice_menus' => 'https://drupal.org/project/nice_menus',
+          '!superfish' => 'https://drupal.org/project/superfish',
+          '!dhtml_menu' => 'https://drupal.org/project/dhtml_menu')
+      ) . '</p>';
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function menu_minipanels_menu() {
+  $items = array();
+  $items['admin/config/user-interface/menu_minipanels'] = array(
+    'title' => 'Menu MiniPanels',
+    'description' => 'Configure defaults for the Menu MiniPanels module.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('menu_minipanels_admin'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'menu_minipanels.admin.inc',
+  );
+  $items['admin/config/user-interface/menu_minipanels/toggle'] = array(
+    'title' => 'Toggle menu',
+    'description' => '',
+    'page callback' => 'menu_minipanels_menu_toggle',
+    'page arguments' => array(5),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'menu_minipanels.admin.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Add the minipanel selector & associated settings to the menu item editor.
+ */
+function menu_minipanels_form_menu_edit_item_alter(&$form, $form_state, $form_id) {
+  // Check if this menu is enabled.
+  if (variable_get('menu_minipanels_' . $form['original_item']['#value']['menu_name'] . '_enabled', FALSE)) {
+    // Load minipanels.
+    ctools_include('plugins', 'panels');
+    $panel_minis = panels_mini_load_all();
+
+    // If no Mini Panels are found, leave a message.
+    if (empty($panel_minis)) {
+      drupal_set_message(t('No Mini Panels are available, some need to be added via the <a href="!link" title="Mini Panels administrator">Mini Panels admin</a> for the Menu_MiniPanels module to work.', array('!link' => url('admin/structure/mini-panels'))), 'warning');
+    }
+
+    // Mini Panels are available.
+    else {
+      // Load the admin code necessary for this.
+      module_load_include('inc', 'menu_minipanels', 'menu_minipanels.admin');
+
+      // The 'options' element already exists, just need to tweak it.
+      $form['options']['#tree'] = TRUE;
+      $form['options']['#type'] = 'markup';
+      $form['options']['#weight'] = '50';
+      unset($form['options']['#value']['attributes']);
+
+      // Create options for select box.
+      $options = array('' => '- None -');
+      foreach ($panel_minis as $panel_mini) {
+        // If the admin title is empty, use the minipanel name.
+        if (!empty($panel_mini->admin_title)) {
+          $title = check_plain($panel_mini->admin_title);
+        }
+        else {
+          $title = check_plain($panel_mini->name);
+        }
+        $options[check_plain($panel_mini->name)] = check_plain($title);
+      }
+      asort($options);
+
+      $item = $form['original_item']['#value'];
+      $form['options']['minipanel'] = array(
+        '#type' => 'select',
+        '#title' => t('Menu minipanel'),
+        '#description' => t('Choose the minipanel to display.'),
+        '#default_value' => isset($item['options']['minipanel']) ? $item['options']['minipanel'] : '',
+        '#options' => $options,
+        '#required' => FALSE,
+      );
+
+      // This is prepended to the array to ensure it is executed before
+      // menu_edit_item_submit.  If it is executed after menu_edit_item_submit,
+      // then the menu_minipanels_hover array will be saved to the database
+      // anyway, and the intercept would be pointless.
+      array_unshift($form['#submit'], 'menu_minipanels_menu_edit_item_submit');
+    }
+  }
+}
+
+/**
+ * If no minipanel is set, stop minipanel settings being saved.
+ */
+function menu_minipanels_menu_edit_item_submit($form, &$form_state) {
+  if (empty($form_state['values']['options']['minipanel'])) {
+    unset($form_state['values']['options']['menu_minipanels_hover']);
+  }
+  else {
+    // Store mlid for later use in uniquely identifiying menu configs in the
+    // Javascript.
+    $form_state['values']['options']['menu_minipanels_hover']['mlid'] = $form_state['values']['mlid'];
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function menu_minipanels_form_menu_edit_menu_alter(&$form, &$form_state) {
+  // Control whether the menu is enabled.
+  $var_name = 'menu_minipanels_' . $form['menu_name']['#default_value'] . '_enabled';
+  $form['menu_minipanels'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Allow to be used with Menu_MiniPanels'),
+    '#default_value' => variable_get($var_name, FALSE),
+    '#description' => t("When this is enabled the Menu_MiniPanels options will be available when editing individual menu items. Disabling this for menus that don't need it will give a small performance gain."),
+  );
+
+  $form['#submit'][] = 'menu_minipanels_form_menu_edit_menu_submit';
+
+  // Adjust the weight of the submit button so it shows at the end.
+  $form['submit']['#weight'] = 1000;
+}
+
+/**
+ * Submission callback for the menu_edit_menu form.
+ */
+function menu_minipanels_form_menu_edit_menu_submit($form, &$form_state) {
+  // When a menu is first created it doesn't have the "menu-" prefix.
+  $menu_name = !empty($form['#insert']) ? 'menu-' . $form_state['values']['menu_name'] : $form_state['values']['menu_name'];
+  $var_name = 'menu_minipanels_' . $menu_name . '_enabled';
+  if (!empty($form_state['values']['menu_minipanels'])) {
+    variable_set($var_name, TRUE);
+  }
+  else {
+    variable_set($var_name, FALSE);
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function menu_minipanels_theme($existing, $type, $theme, $path) {
+  if ($type = 'module') {
+    return array(
+      'menu_minipanel' => array(
+        'template' => 'menu-minipanel',
+        'variables' => array('minipanel_name' => NULL, 'mlid' => NULL),
+        'path' => drupal_get_path('module', 'menu_minipanels') . '/theme',
+      ),
+    );
+  }
+}
+
+/**
+ * Implements hook_theme_registry_alter().
+ *
+ * Copy the original `link` theme function into our namespace, then override
+ * the original function with our version.  The original will be invoked by
+ * our version.
+ */
+function menu_minipanels_theme_registry_alter(&$vars) {
+  $vars['menu_minipanels_theme_link_default'] = $vars['link'];
+  $vars['link']['function'] = 'menu_minipanels_theme_link';
+}
+
+/**
+ * Determine if a given set of menu links contains any minipanels.
+ *
+ * @see menu_minipanels_page_alter()
+ */
+function menu_minipanels_prepare_links($links) {
+  foreach ($links as $ctr => $link) {
+    if (!empty($link['minipanel'])) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Replacement theme function for theme_link().
+ *
+ * Injects menu minipanels into to links without disturbing themes that may
+ * also implement the theme_link() function.
+ *
+ * @see menu_minipanels_theme_registry_alter()
+ * @see theme_link()
+ */
+function menu_minipanels_theme_link($link) {
+  $minipanel = '';
+  if (!empty($link['options']['minipanel'])) {
+    $prefix = '';
+    if (empty($link['options']['attributes'])) {
+      $link['options']['attributes'] = array();
+    }
+    if (empty($link['options']['attributes']['class'])) {
+      $link['options']['attributes']['class'] = array();
+    }
+    $link['options']['attributes']['class'][] = 'menu-minipanel';
+    $link['options']['attributes']['class'][] = 'menu-minipanel-' . $link['options']['menu_minipanels_hover']['mlid'];
+
+    // Superfish and Nice Menus functionality depend on a menuparent class.
+    if (!in_array('menuparent', $link['options']['attributes']['class'])) {
+      $link['options']['attributes']['class'][] = 'menuparent';
+    }
+
+    // Render the mini panel.
+    if (!menu_minipanels_excluded_path()) {
+      $minipanel = theme('menu_minipanel', array('minipanel_name' => $link['options']['minipanel'], 'mlid' => $link['options']['menu_minipanels_hover']['mlid']));
+    }
+  }
+
+  // Render the link via our internally stored reference to the original
+  // theme_link function, and then append the minipanel, if it exists.
+  return theme('menu_minipanels_theme_link_default', $link) . $minipanel;
+}
+
+/**
+ * Prepare minipanel variables for the template layer.
+ */
+function menu_minipanels_preprocess_menu_minipanel(&$vars) {
+
+  // Create a rendered minipanel based on the provided minipanel_name
+  $panel = panels_mini_block_view($vars['minipanel_name']);
+  $vars['minipanel'] = $panel['content'];
+
+  // Remove default class added by Drupal, which messes up our theming.
+  unset($vars['classes_array'][0]);
+
+  // Add our custom classes.
+  $vars['classes_array'][] = 'menu-minipanel-panel';
+  $vars['classes_array'][] = drupal_html_class('menu-minipanel-' . $vars['minipanel_name']);
+}
+
+/**
+ * Implements hook_preprocess_menu_link().
+ *
+ * Add integration with Nice Menus module, which uses theme('menu_link') to
+ * its menus and requires a class 'menuparent' on the LI element for proper
+ * sub-menu functionality.
+ */
+function menu_minipanels_preprocess_menu_link(&$vars) {
+
+  // Ignore links sent through theme_menu_link without a related 'menu'.
+  if (!isset($vars['menu']) || !is_array($vars['menu'])) {
+    return;
+  }
+  foreach ($vars['menu'] as $key => &$menu_item) {
+
+    // Only add the class if a minipanel is defined for the specified link.
+    if ($menu_item['link']['mlid'] == $vars['element']['#original_link']['mlid']) {
+      if (!empty($menu_item['link']['options']['minipanel'])) {
+
+        // Only add the class on pages not excluded by menu_minipanels configs.
+        if (!menu_minipanels_excluded_path()) {
+
+          // Only add the class if it doesn't already exist.
+          if (!in_array('menuparent', $vars['element']['#attributes']['class'])) {
+            $vars['element']['#attributes']['class'][] = 'menuparent';
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_page_alter().
+ *
+ * Determines whether the current page request contains any Menu MiniPanels
+ * and if so, add the required assets.
+ */
+function menu_minipanels_page_alter(&$page) {
+  // Optionally ignore certain pages.
+  if (menu_minipanels_excluded_path()) {
+    return;
+  }
+
+  // Add CSS.
+
+  // Load each of the menus that are configured for menu_minipanels. It is safe
+  // to use menu_get_names() here as the data is cached, and it won't be
+  // possible that the shortcut sets have been accidentally added.
+  $load_requirements = FALSE;
+  $enabled_menus = array();
+  foreach (menu_get_names() as $menu) {
+    if (variable_get('menu_minipanels_' . $menu . '_enabled', FALSE)) {
+      $enabled_menus[] = $menu;
+
+      // Loop through each level of the menu tree and see whether qTip needs to
+      // be loaded.
+      $level = 0;
+      while ($items = menu_navigation_links($menu, $level)) {
+        if (menu_minipanels_prepare_links($items)) {
+          $load_requirements = TRUE;
+        }
+        $level++;
+      }
+    }
+  }
+
+  // If the main menu is enabled and the main & secondary menus both point to
+  // the same menu, load the second level of that menu.
+  $primary_menu = variable_get('menu_main_links_source', 'main-menu');
+  $secondary_menu = variable_get('menu_secondary_links_source', 'user-menu');
+  if (in_array($primary_menu, $enabled_menus) && $primary_menu == $secondary_menu) {
+    if (menu_minipanels_prepare_links(menu_navigation_links($primary_menu, 1))) {
+      $load_requirements = TRUE;
+    }
+  }
+
+  // If menus are actually needed, load the required CSS.
+  if ($load_requirements) {
+    // The path to this module.
+    $path = drupal_get_path('module', 'menu_minipanels');
+
+    // Load the module's custom CSS.
+    drupal_add_css($path . '/css/menu_minipanels.css');
+
+  }
+}
+
+/**
+ * Check if current path should be excluded.
+ */
+function menu_minipanels_excluded_path() {
+  // By default don't exclude the page.
+  $exclude_path_match = FALSE;
+
+  // By default ignore the admin pages.
+  $exclude_paths = drupal_strtolower(variable_get('menu_minipanels_exclude_paths', "admin\nadmin/*"));
+
+  // Don't bother checking anything if the setting is empty.
+  if (!empty($exclude_paths)) {
+    // Check the current raw path first.
+    $exclude_path_match = drupal_match_path($_GET['q'], $exclude_paths);
+
+    // If there isn't already a patch, check for a possible alias.
+    if (!$exclude_path_match) {
+      // Get the current path.
+      $path = drupal_strtolower(drupal_get_path_alias($_GET['q']));
+
+      // If the path *is* different to the current raw URL, check it too.
+      if ($path != $_GET['q']) {
+        $exclude_path_match = drupal_match_path($path, $exclude_paths);
+      }
+    }
+  }
+
+  return $exclude_path_match;
+}

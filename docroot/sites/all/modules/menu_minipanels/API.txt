@@ -1,0 +1,12 @@
+Menu MiniPanels API
+-------------------------------------
+
+Deprecation warning:
+
+Version 2 of Menu MiniPanels removed all JavaScript dependencies including
+the qTip tooltip library. All hover menu effects, positioning, layout, and
+visual styles are now written purely in CSS, and as a result, the PHP and
+JavaScript APIs from Version 1 of Menu MiniPanels are no longer needed and
+have been deprecated.
+
+Refer to the README.txt for information on updating from version 1 to version 2.
