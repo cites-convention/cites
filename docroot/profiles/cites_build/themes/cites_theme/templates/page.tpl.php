@@ -114,7 +114,10 @@
               </div><!-- #search -->
             <?php endif; ?>
             <?php
-            if (module_exists('nice_menus')) {
+            if (module_exists('menu_block')) {
+              $megamenu = module_invoke('menu_block', 'block_view', 1);
+              print render($megamenu['content']);
+            } else if (module_exists('nice_menus')) {
               // Uses the Nice menus module to display the Main
               // links.
               print theme('nice_menus_main_menu', array(

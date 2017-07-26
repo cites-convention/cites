@@ -2114,3 +2114,26 @@ div#block-tb-megamenu-menu-mike-places {
 }
 
 div#block-tb-megamenu-menu-mike-places > h2{color: #fff;}
+
+
+div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul {
+  display: inline-flex;
+  font-size: 1em;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  float: none;
+  z-index: 901;
+}
+
+div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li{
+  list-style: none;
+}
+
+div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 a {
+  text-decoration: none;
+}
+
+div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > a {
+  color: #fff;
+}
