@@ -2136,8 +2136,20 @@ div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-m
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > a {
   color: #fff;
+  padding: 7px 10px;
 }
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > .menu-minipanel-panel {
   background-color: #fff;
+  padding: 0px 15px;
+}
+
+#main-menu ul.menu li a {
+  line-height: 25px;
+}
+
+div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > a:hover {
+  background-color: #fff;
+  color: #3b3b3b;
+  padding: 7px 10px;
 }
