@@ -2193,7 +2193,7 @@ div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-m
 }
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > .menu-minipanel-panel > li > .panel-flexible > .panels-flexible-22-inside > .panels-flexible-region-first {
-  width: auto;
+  width: 30em;
 }
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > .menu-minipanel-panel > li > .panel-flexible > .panels-flexible-22-inside > .panels-flexible-region-last {
@@ -2204,4 +2204,9 @@ div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-m
 .menu-item-description {
   padding-top: 15px;
   padding-bottom: 0px;
+}
+
+.menu-topics-flora > .pane-content > .menu-block-wrapper > ul.menu.clearfix > li.first.expanded > a {
+  padding-left: 15px;
+
 }
