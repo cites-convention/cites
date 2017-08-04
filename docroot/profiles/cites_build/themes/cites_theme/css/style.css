@@ -2140,7 +2140,7 @@ div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-m
 }
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > .menu-minipanel-panel {
-  background-color: lightgray;
+  background-color: #d3d3d3;
   padding: 0px 15px;
 }
 
@@ -2149,7 +2149,7 @@ div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-m
 }
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > a:hover {
-  background-color: lightgray;
+  background-color: #d3d3d3;
   color: #3b3b3b;
   padding: 7px 10px;
 }
@@ -2159,7 +2159,7 @@ div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-m
 }
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > .menu-minipanel-panel > * > * {
-  background-color: lightgray;
+  background-color: #d3d3d3;
 }
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > .menu-minipanel-panel ul {
