@@ -508,6 +508,8 @@ h1#site-name {
   font-size: 1em;
   margin: 5px 15px 0;
   padding: 0;
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
 #language-switcher ul li,
@@ -2202,3 +2204,9 @@ div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-m
   padding-left: 1em;
 }
 
+#language-switcher a {
+  color: #ffffff;
+  text-shadow: 5px -3px 11px #ffffff;
+  background-color: #43631C;
+  border-radius: 3px;
+}
