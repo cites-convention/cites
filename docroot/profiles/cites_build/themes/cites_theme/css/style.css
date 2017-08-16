@@ -2185,6 +2185,7 @@ div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-m
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li .menu-minipanel-panel {
   top: auto;
+  padding-left: 25px;
 }
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > .menu-minipanel-panel > li > .panel-display > .center-wrapper > .panel-col-first {
