@@ -2166,12 +2166,8 @@ div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-m
 }
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > .menu-minipanel-panel ul {
-  margin: -7px 0px -7px 0px;
+  margin: 0;
   padding: 0;
-}
-
-div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > .menu-minipanel-panel ul > li {
-  margin: -7px 0px;
 }
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > .menu-minipanel-panel li   {
@@ -2180,7 +2176,7 @@ div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-m
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > .menu-minipanel-panel > li > .panels-flexible > .panels-flexible-inside > .panels-flexible-region > .inside > .contextual-links-region > .pane-content > .menu-block-wrapper > ul > li a{
   padding-left: 10px;
-
+  
 }
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li .menu-minipanel-panel {
   top: auto;
