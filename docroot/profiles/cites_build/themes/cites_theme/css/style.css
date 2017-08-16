@@ -2176,6 +2176,7 @@ div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-m
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > .menu-minipanel-panel li   {
   list-style: none;
+  margin-bottom: 5px;
 }
 
 div#main-menu > div.menu-block-wrapper.menu-block-1.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li > .menu-minipanel-panel > li > .panels-flexible > .panels-flexible-inside > .panels-flexible-region > .inside > .contextual-links-region > .pane-content > .menu-block-wrapper > ul > li a{
