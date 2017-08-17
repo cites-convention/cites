@@ -115,7 +115,7 @@
             <?php endif; ?>
             <?php
             if (module_exists('menu_block')) {
-              $megamenu = module_invoke('menu_block', 'block_view', 1);
+              $megamenu = module_invoke('menu_block', 'block_view', 25);
               print render($megamenu['content']);
             } else if (module_exists('nice_menus')) {
               // Uses the Nice menus module to display the Main
