@@ -2119,7 +2119,7 @@ div#block-tb-megamenu-menu-mike-places > h2{color: #fff;}
 
 
 div#main-menu > div.menu-block-wrapper.menu-block-25.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul {
-  display: inline-flex;
+  display: inline-block;
   font-size: 1em;
   margin: 0;
   padding: 0;
@@ -2130,6 +2130,7 @@ div#main-menu > div.menu-block-wrapper.menu-block-25.menu-name-main-menu.parent-
 
 div#main-menu > div.menu-block-wrapper.menu-block-25.menu-name-main-menu.parent-mlid-0.menu-level-1 > ul.menu.clearfix > li{
   list-style: none;
+  float: left;
 }
 
 div#main-menu > div.menu-block-wrapper.menu-block-25.menu-name-main-menu.parent-mlid-0.menu-level-1 a {
