@@ -8,6 +8,11 @@ Patch documentation should be in the following format:
   * patch file location
 
 
+* menu_minipanel
+  * minipanel should not be displayed in the breadcrumb
+  * https://www.drupal.org/node/1758866
+  * /patches/menu_minipanel/menu_minipanels-breadcrumb-issue-1758866-59.patch
+
 * i18n_string
   * Fix i18n_string error undifined method string_remove when using build function.
   * /patches/i18n_string_fix_install_error_string_remove.patch

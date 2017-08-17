@@ -1,0 +1,45 @@
+diff --git a/menu_minipanels.module b/menu_minipanels.module
+index a7ad570..49ca452 100755
+--- a/menu_minipanels.module
++++ b/menu_minipanels.module
+@@ -195,6 +195,9 @@ function menu_minipanels_theme($existing, $type, $theme, $path) {
+ function menu_minipanels_theme_registry_alter(&$vars) {
+   $vars['menu_minipanels_theme_link_default'] = $vars['link'];
+   $vars['link']['function'] = 'menu_minipanels_theme_link';
++
++  $vars['menu_minipanels_theme_menu_link_default'] = $vars['menu_link'];
++  $vars['menu_link']['function'] = 'menu_minipanels_theme_menu_link';
+ }
+ 
+ /**
+@@ -212,6 +215,21 @@ function menu_minipanels_prepare_links($links) {
+ }
+ 
+ /**
++ * Replacement theme function for theme_menu_link().
++ *
++ * @see menu_minipanels_theme_registry_alter()
++ * @see theme_menu_link()
++ */
++function menu_minipanels_theme_menu_link(array $variables) {
++  // Flag the link as belonging to a menu, so the panel is displayed.
++  $variables['element']['#localized_options']['display_minipanels'] = TRUE;
++
++  // Render the link via our internally stored reference to the original
++  // theme_menu_link function.
++  return theme('menu_minipanels_theme_menu_link_default', $variables);
++}
++
++/**
+  * Replacement theme function for theme_link().
+  *
+  * Injects menu minipanels into to links without disturbing themes that may
+@@ -222,7 +240,7 @@ function menu_minipanels_prepare_links($links) {
+  */
+ function menu_minipanels_theme_link($link) {
+   $minipanel = '';
+-  if (!empty($link['options']['minipanel'])) {
++  if (!empty($link['options']['minipanel']) && !empty($link['options']['display_minipanels'])) {
+     $prefix = '';
+     if (empty($link['options']['attributes'])) {
+       $link['options']['attributes'] = array();
