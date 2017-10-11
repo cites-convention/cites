@@ -3,9 +3,9 @@ description = A block that provides linked icons to your other presences on the 
 core = 7.x
 configure = admin/config/services/on_the_web
 
-; Information added by drupal.org packaging script on 2013-04-29
-version = "7.x-1.4"
+; Information added by Drupal.org packaging script on 2015-02-13
+version = "7.x-1.5"
 core = "7.x"
 project = "on_the_web"
-datestamp = "1367196920"
+datestamp = "1423788182"
 

@@ -12,9 +12,13 @@
 }
 
 #social-media span {
-  margin: 0 5px 5px;
+  margin: 0 4px 5px;
 }
 
+.otw-instagram {
+    top: 2px;
+    position: relative;
+}
 #social-media a:hover img {
   -webkit-filter: grayscale(1);
   filter: gray;
